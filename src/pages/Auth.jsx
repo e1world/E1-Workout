@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 
+// Put your line-art illustration at: public/splash.png
+// (the public/ folder is in the project root, next to src/)
+
 export default function Auth() {
   const { signIn, signUp } = useAuth()
   const [mode, setMode] = useState('login')
@@ -33,61 +36,168 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6" style={{ background: 'var(--bg)' }}>
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-12">
-          <div
-            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-5"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--border-2)' }}
-          >
-            <span className="text-2xl font-black tracking-tight" style={{ color: 'var(--text)', fontFamily: 'system-ui' }}>
-              E1
-            </span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>E1 Move</h1>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-3)' }}>Train. Track. Progress.</p>
+    <div style={{ background: '#000', minHeight: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+
+      {/* Illustration — top half */}
+      <div style={{ flex: '0 0 52%', position: 'relative', overflow: 'hidden', background: '#000' }}>
+        <img
+          src="/splash.png"
+          alt=""
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center top',
+            display: 'block',
+          }}
+          onError={(e) => { e.target.style.display = 'none' }}
+        />
+        {/* Fade into dark bottom */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px',
+          background: 'linear-gradient(to bottom, transparent, #0d0d0d)',
+          pointerEvents: 'none',
+        }} />
+      </div>
+
+      {/* Bottom — app name + login form */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '16px 28px 48px', background: '#0d0d0d' }}>
+
+        {/* App name */}
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{
+            fontFamily: "'Oxanium', sans-serif",
+            fontWeight: 300,
+            fontSize: '40px',
+            color: '#f0ece4',
+            letterSpacing: '0.06em',
+            margin: '0 0 4px',
+            lineHeight: 1,
+          }}>
+            E1 Move
+          </h1>
+          <p style={{
+            fontFamily: "'Oxanium', sans-serif",
+            fontSize: '11px',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: '#525248',
+            margin: 0,
+          }}>
+            Train · Track · Progress
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-2)' }}>Email</label>
+            <label style={{
+              display: 'block',
+              fontSize: '11px',
+              fontFamily: "'Oxanium', sans-serif",
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: '#9a9a8a',
+              marginBottom: '6px',
+            }}>Email</label>
             <input
-              type="email" required value={email}
+              type="email"
+              required
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-base focus:outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
               placeholder="you@example.com"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: 'var(--text-2)' }}>Password</label>
-            <input
-              type="password" required value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl px-4 py-3 text-base focus:outline-none"
-              style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}
-              placeholder="••••••••"
+              style={{
+                width: '100%',
+                background: '#1c1c1c',
+                border: '1px solid #2e2e2e',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                fontSize: '15px',
+                color: '#f0ece4',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'system-ui, sans-serif',
+              }}
             />
           </div>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
-          {successMsg && <p className="text-sm" style={{ color: 'var(--text)' }}>{successMsg}</p>}
+          <div>
+            <label style={{
+              display: 'block',
+              fontSize: '11px',
+              fontFamily: "'Oxanium', sans-serif",
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: '#9a9a8a',
+              marginBottom: '6px',
+            }}>Password</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              style={{
+                width: '100%',
+                background: '#1c1c1c',
+                border: '1px solid #2e2e2e',
+                borderRadius: '10px',
+                padding: '12px 14px',
+                fontSize: '15px',
+                color: '#f0ece4',
+                outline: 'none',
+                boxSizing: 'border-box',
+                fontFamily: 'system-ui, sans-serif',
+              }}
+            />
+          </div>
+
+          {error && <p style={{ color: '#c0392b', fontSize: '13px', margin: '2px 0 0' }}>{error}</p>}
+          {successMsg && <p style={{ color: '#9a9a8a', fontSize: '13px', margin: '2px 0 0' }}>{successMsg}</p>}
 
           <button
-            type="submit" disabled={loading}
-            className="w-full font-semibold py-3.5 rounded-xl transition-opacity disabled:opacity-50 text-base mt-2"
-            style={{ background: 'var(--text)', color: 'var(--bg)' }}
+            type="submit"
+            disabled={loading}
+            style={{
+              width: '100%',
+              background: '#f0ece4',
+              color: '#0d0d0d',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '14px',
+              fontSize: '15px',
+              fontFamily: "'Oxanium', sans-serif",
+              fontWeight: 600,
+              letterSpacing: '0.08em',
+              marginTop: '4px',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1,
+            }}
           >
-            {loading ? 'Loading...' : mode === 'login' ? 'Log in' : 'Create account'}
+            {loading ? '...' : mode === 'login' ? 'Log in' : 'Create account'}
           </button>
         </form>
 
-        <p className="text-center text-sm mt-6" style={{ color: 'var(--text-3)' }}>
-          {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+        <p style={{
+          textAlign: 'center',
+          fontSize: '13px',
+          color: '#525248',
+          marginTop: '18px',
+          fontFamily: "'Oxanium', sans-serif",
+        }}>
+          {mode === 'login' ? 'No account? ' : 'Have an account? '}
           <button
             onClick={() => { setMode(mode === 'login' ? 'signup' : 'login'); setError('') }}
-            className="font-medium underline"
-            style={{ color: 'var(--text-2)' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#9a9a8a',
+              fontSize: '13px',
+              fontFamily: "'Oxanium', sans-serif",
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 0,
+            }}
           >
             {mode === 'login' ? 'Sign up' : 'Log in'}
           </button>
