@@ -14,22 +14,23 @@ function SplashScreen({ opacity }) {
   return (
     <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease' }}>
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        {/* Sun circle — top right corner, behind figure */}
+        <img
+          src="/splash.png"
+          alt=""
+          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+        />
+        {/* Sun circle — on top with screen blend, glows through black bg */}
         <div style={{
           position: 'absolute',
           width: '65vw',
           height: '65vw',
           borderRadius: '50%',
-          background: '#6b1414',
+          background: '#8b1a1a',
           top: 'calc(-65vw / 2)',
           right: 'calc(-65vw / 2)',
-          zIndex: 1,
+          zIndex: 2,
+          mixBlendMode: 'screen',
         }} />
-        <img
-          src="/splash.png"
-          alt=""
-          style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
-        />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '140px', background: 'linear-gradient(to bottom, transparent, #0d0d0d)', pointerEvents: 'none', zIndex: 3 }} />
       </div>
       <div style={{ padding: '16px 28px 52px', background: '#0d0d0d', flexShrink: 0 }}>
