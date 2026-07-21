@@ -17,7 +17,7 @@ function SplashScreen({ opacity }) {
         <img
           src="/splash.png"
           alt=""
-          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 20%', display: 'block' }}
         />
         {/* Sun circle — on top with screen blend, glows through black bg */}
         <div style={{
@@ -26,7 +26,7 @@ function SplashScreen({ opacity }) {
           height: '65vw',
           borderRadius: '50%',
           background: '#8b1a1a',
-          top: 'calc(-65vw / 2)',
+          top: '18%',
           right: 'calc(-65vw / 2)',
           zIndex: 2,
           mixBlendMode: 'screen',
