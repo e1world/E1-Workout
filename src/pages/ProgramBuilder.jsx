@@ -156,7 +156,7 @@ export default function ProgramBuilder() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -181,7 +181,7 @@ export default function ProgramBuilder() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="e.g. 4-Day Upper/Lower"
-            className="w-full mt-1 bg-gray-700 rounded-xl px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-green-500 text-base"
+            className="w-full mt-1 bg-gray-700 rounded-xl px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-white text-base"
           />
         </div>
         <div>
@@ -191,13 +191,13 @@ export default function ProgramBuilder() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="e.g. Hypertrophy focus, 4× per week"
-            className="w-full mt-1 bg-gray-700 rounded-xl px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-green-500 text-base"
+            className="w-full mt-1 bg-gray-700 rounded-xl px-3 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-white text-base"
           />
         </div>
         <label className="flex items-center gap-3 cursor-pointer">
           <div
             onClick={() => setIsActive(!isActive)}
-            className={`relative w-10 h-6 rounded-full transition-colors ${isActive ? 'bg-green-500' : 'bg-gray-600'}`}
+            className={`relative w-10 h-6 rounded-full transition-colors ${isActive ? 'bg-white' : 'bg-gray-600'}`}
           >
             <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${isActive ? 'translate-x-4' : ''}`} />
           </div>
@@ -300,7 +300,7 @@ export default function ProgramBuilder() {
                             step="2.5"
                           />
                           <div className="col-span-2">
-                            <p className="text-xs text-green-400/80 mt-1">
+                            <p className="text-xs text-gray-200/80 mt-1">
                               💡 {progressionTip(ex.rep_min, ex.rep_max, ex.weight_increment, ex.weight_unit)}
                             </p>
                           </div>
@@ -332,7 +332,7 @@ export default function ProgramBuilder() {
       <button
         onClick={save}
         disabled={saving}
-        className="w-full bg-green-500 hover:bg-green-400 active:bg-green-600 text-white font-bold py-4 rounded-2xl transition-colors disabled:opacity-50 text-base"
+        className="w-full bg-white hover:bg-white active:bg-gray-200 text-white font-bold py-4 rounded-2xl transition-colors disabled:opacity-50 text-base"
       >
         {saving ? 'Saving…' : id ? 'Save changes' : 'Create program'}
       </button>
@@ -350,7 +350,7 @@ function NumField({ label, value, onChange, step = '1' }) {
         onChange={(e) => onChange(e.target.value)}
         step={step}
         min="0"
-        className="w-full mt-1 bg-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
+        className="w-full mt-1 bg-gray-600 text-white rounded-lg px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-white text-sm"
       />
     </div>
   )

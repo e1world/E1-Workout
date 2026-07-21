@@ -70,7 +70,7 @@ export default function ExerciseProgress() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -141,10 +141,10 @@ export default function ExerciseProgress() {
               <Line
                 type="monotone"
                 dataKey="maxWeight"
-                stroke="#22c55e"
+                stroke="var(--text)"
                 strokeWidth={2.5}
-                dot={{ fill: '#22c55e', r: 4, strokeWidth: 0 }}
-                activeDot={{ r: 6, fill: '#4ade80' }}
+                dot={{ fill: 'var(--text)', r: 4, strokeWidth: 0 }}
+                activeDot={{ r: 6, fill: 'var(--text)' }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -175,7 +175,7 @@ function StatCard({ label, value, green }) {
   return (
     <div className="bg-gray-800 rounded-2xl px-3 py-3 text-center">
       <p className="text-gray-500 text-xs mb-1">{label}</p>
-      <p className={`font-bold text-sm ${green ? 'text-green-400' : 'text-white'}`}>{value}</p>
+      <p className={`font-bold text-sm ${green ? 'text-gray-200' : 'text-white'}`}>{value}</p>
     </div>
   )
 }

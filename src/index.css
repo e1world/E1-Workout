@@ -2,21 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens ──────────────────────────────────── */
+/* ── Design tokens — black & off-white editorial ── */
 :root {
-  --bg:          #080c08;
-  --surface:     #0f140f;
-  --surface-2:   #161e16;
-  --surface-3:   #1c271c;
-  --border:      #253025;
-  --border-2:    #2e3d2e;
-  --green:       #3d9e60;
-  --green-bright:#4ade80;
-  --green-dim:   #1a4d2e;
-  --green-muted: #14532d;
-  --text:        #edf2ed;
-  --text-2:      #8ca98c;
-  --text-3:      #4d6b4d;
+  --bg:        #141414;
+  --surface:   #1c1c1c;
+  --surface-2: #242424;
+  --surface-3: #2c2c2c;
+  --border:    #2e2e2e;
+  --border-2:  #3a3a3a;
+  --text:      #f0ece4;   /* off-white / cream */
+  --text-2:    #9a9a8a;   /* warm mid-gray */
+  --text-3:    #525248;   /* dim */
+  --accent:    #f0ece4;   /* white is the accent */
+  --accent-dim:#2c2c2c;
 }
 
 @layer base {

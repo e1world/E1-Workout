@@ -165,7 +165,7 @@ export default function ActiveWorkout() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -180,7 +180,7 @@ export default function ActiveWorkout() {
           {progressions.map((p) => (
             <div key={p.exerciseId} className="bg-gray-800 rounded-2xl px-5 py-4 text-left">
               <p className="text-white font-semibold">{p.exerciseName}</p>
-              <p className="text-green-400 text-sm mt-1">
+              <p className="text-gray-200 text-sm mt-1">
                 {p.oldWeight} → <span className="font-bold">{p.newWeight} {p.unit}</span>
                 <span className="text-gray-500 ml-2">(+{p.newWeight - p.oldWeight})</span>
               </p>
@@ -189,7 +189,7 @@ export default function ActiveWorkout() {
         </div>
         <button
           onClick={() => navigate('/')}
-          className="bg-green-500 text-white font-bold px-10 py-4 rounded-2xl text-base"
+          className="bg-white text-white font-bold px-10 py-4 rounded-2xl text-base"
         >
           Done
         </button>
@@ -220,7 +220,7 @@ export default function ActiveWorkout() {
           <button
             onClick={finishWorkout}
             disabled={finishing || done === 0}
-            className="bg-green-500 hover:bg-green-400 active:bg-green-600 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-40"
+            className="bg-white hover:bg-white active:bg-gray-200 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-40"
           >
             {finishing ? '…' : 'Finish'}
           </button>
@@ -228,7 +228,7 @@ export default function ActiveWorkout() {
         {/* Progress bar */}
         <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
           <div
-            className="h-full bg-green-500 rounded-full transition-all duration-300"
+            className="h-full bg-white rounded-full transition-all duration-300"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -245,7 +245,7 @@ export default function ActiveWorkout() {
             <div
               key={ex.id}
               className={`bg-gray-800 rounded-2xl overflow-hidden border ${
-                allDone ? 'border-green-500/40' : 'border-gray-700'
+                allDone ? 'border-white/15' : 'border-gray-700'
               }`}
             >
               {/* Exercise header */}
@@ -257,7 +257,7 @@ export default function ActiveWorkout() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {allDone && <span className="text-green-400 text-lg">✓</span>}
+                  {allDone && <span className="text-gray-200 text-lg">✓</span>}
                   <button
                     onClick={() => navigate(`/exercise/${ex.id}`)}
                     className="text-gray-500 hover:text-gray-300"
@@ -283,11 +283,11 @@ export default function ActiveWorkout() {
                   <div
                     key={idx}
                     className={`grid grid-cols-12 gap-1 items-center mb-1.5 rounded-xl px-1 py-1.5 transition-colors ${
-                      set.completed ? 'bg-green-500/10' : 'bg-gray-700/40'
+                      set.completed ? 'bg-white/5' : 'bg-gray-700/40'
                     }`}
                   >
                     {/* Set number */}
-                    <span className={`col-span-1 text-sm font-medium ${set.completed ? 'text-green-400' : 'text-gray-400'}`}>
+                    <span className={`col-span-1 text-sm font-medium ${set.completed ? 'text-gray-200' : 'text-gray-400'}`}>
                       {idx + 1}
                     </span>
 
@@ -297,7 +297,7 @@ export default function ActiveWorkout() {
                         type="number"
                         value={set.weight ?? ''}
                         onChange={(e) => updateSet(ex.id, idx, 'weight', e.target.value)}
-                        className="w-full text-center bg-gray-700 text-white rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-500"
+                        className="w-full text-center bg-gray-700 text-white rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-white"
                         placeholder={`${ex.current_weight}`}
                         step="2.5"
                         min="0"
@@ -311,7 +311,7 @@ export default function ActiveWorkout() {
                         type="number"
                         value={set.actual_reps ?? ''}
                         onChange={(e) => updateSet(ex.id, idx, 'actual_reps', e.target.value)}
-                        className={`w-full text-center bg-gray-700 rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 ${
+                        className={`w-full text-center bg-gray-700 rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-white ${
                           set.actual_reps !== null
                             ? repStatusClass(set.actual_reps, ex.rep_min, ex.rep_max)
                             : 'text-gray-400'
@@ -329,7 +329,7 @@ export default function ActiveWorkout() {
                         onClick={() => toggleComplete(ex.id, idx)}
                         className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-90 ${
                           set.completed
-                            ? 'bg-green-500 border-green-500 text-white'
+                            ? 'bg-white border-white/30 text-white'
                             : 'border-gray-600 text-transparent'
                         }`}
                       >
@@ -343,7 +343,7 @@ export default function ActiveWorkout() {
 
                 {/* Progression hint */}
                 {allDone && sets.every((s) => s.actual_reps >= ex.rep_max) && (
-                  <p className="text-green-400 text-xs mt-2 text-center">
+                  <p className="text-gray-200 text-xs mt-2 text-center">
                     🔥 All sets at max reps — weight goes up {ex.weight_increment}{ex.weight_unit} next session!
                   </p>
                 )}
@@ -358,7 +358,7 @@ export default function ActiveWorkout() {
         <button
           onClick={finishWorkout}
           disabled={finishing || done === 0}
-          className="w-full bg-green-500 hover:bg-green-400 active:bg-green-600 disabled:opacity-40 text-white font-bold py-4 rounded-2xl text-base transition-colors"
+          className="w-full bg-white hover:bg-white active:bg-gray-200 disabled:opacity-40 text-white font-bold py-4 rounded-2xl text-base transition-colors"
         >
           {finishing ? 'Saving…' : `Finish Workout (${done}/${total} sets)`}
         </button>

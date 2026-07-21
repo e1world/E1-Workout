@@ -36,7 +36,7 @@ export default function Programs() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -46,7 +46,7 @@ export default function Programs() {
         <h1 className="text-2xl font-bold text-white">Programs</h1>
         <button
           onClick={() => navigate('/programs/new')}
-          className="bg-green-500 text-white text-sm font-semibold px-4 py-2 rounded-xl active:bg-green-600"
+          className="bg-white text-white text-sm font-semibold px-4 py-2 rounded-xl active:bg-gray-200"
         >
           + New
         </button>
@@ -57,7 +57,7 @@ export default function Programs() {
           <p className="text-gray-400 mb-4">No programs yet.</p>
           <button
             onClick={() => navigate('/programs/new')}
-            className="bg-green-500 text-white font-semibold px-6 py-3 rounded-xl"
+            className="bg-white text-white font-semibold px-6 py-3 rounded-xl"
           >
             Create your first program
           </button>
@@ -68,14 +68,14 @@ export default function Programs() {
             <div
               key={p.id}
               className={`bg-gray-800 rounded-2xl px-5 py-4 border ${
-                p.is_active ? 'border-green-500/50' : 'border-gray-700'
+                p.is_active ? 'border-white/20' : 'border-gray-700'
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     {p.is_active && (
-                      <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full font-medium">
+                      <span className="text-xs bg-white/5 text-gray-200 px-2 py-0.5 rounded-full font-medium">
                         Active
                       </span>
                     )}
@@ -98,7 +98,7 @@ export default function Programs() {
                   {!p.is_active && (
                     <button
                       onClick={() => setActive(p.id)}
-                      className="text-green-400 hover:text-green-300 text-sm px-2 py-1"
+                      className="text-gray-200 hover:text-gray-300 text-sm px-2 py-1"
                     >
                       Activate
                     </button>

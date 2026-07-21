@@ -8,8 +8,8 @@ export default function Avatar({ size = 40, className = '' }) {
       className={className}
       style={{ borderRadius: '50%', flexShrink: 0 }}
     >
-      <circle cx="50" cy="50" r="50" fill="#1a4d2e" />
-      <circle cx="50" cy="50" r="47" fill="none" stroke="#2e6b42" strokeWidth="1.5" />
+      <circle cx="50" cy="50" r="50" fill="#242424" />
+      <circle cx="50" cy="50" r="47" fill="none" stroke="#3a3a3a" strokeWidth="1.5" />
       <text
         x="50"
         y="57"
@@ -18,7 +18,7 @@ export default function Avatar({ size = 40, className = '' }) {
         fontWeight="700"
         fontSize="28"
         letterSpacing="-1"
-        fill="#4ade80"
+        fill="#f0ece4"
       >
         E1
       </text>

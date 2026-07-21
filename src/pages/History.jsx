@@ -60,7 +60,7 @@ export default function History() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -122,7 +122,7 @@ export default function History() {
                               const exId = exSets[0]?.program_exercise_id
                               if (exId) navigate(`/exercise/${exId}`)
                             }}
-                            className="text-green-400 text-xs hover:text-green-300"
+                            className="text-gray-200 text-xs hover:text-gray-300"
                           >
                             Progress →
                           </button>
@@ -134,12 +134,12 @@ export default function History() {
                               <span className="text-white">{s.weight} {s.weight_unit}</span>
                               <span className="text-gray-400">×</span>
                               <span className={`font-medium ${
-                                s.actual_reps >= s.target_reps ? 'text-green-400' : 'text-yellow-400'
+                                s.actual_reps >= s.target_reps ? 'text-gray-200' : 'text-yellow-400'
                               }`}>
                                 {s.actual_reps} reps
                               </span>
                               {s.actual_reps >= s.target_reps && (
-                                <span className="text-green-400 text-xs">✓ max</span>
+                                <span className="text-gray-200 text-xs">✓ max</span>
                               )}
                             </div>
                           ))}
