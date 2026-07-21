@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
@@ -9,11 +10,30 @@ import ActiveWorkout from './pages/ActiveWorkout'
 import History from './pages/History'
 import ExerciseProgress from './pages/ExerciseProgress'
 
+function SplashScreen() {
+  return (
+    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        <img
+          src="/splash.png"
+          alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+        />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '140px', background: 'linear-gradient(to bottom, transparent, #0d0d0d)', pointerEvents: 'none' }} />
+      </div>
+      <div style={{ padding: '16px 28px 52px', background: '#0d0d0d', flexShrink: 0 }}>
+        <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '40px', color: '#f0ece4', letterSpacing: '0.06em', margin: '0 0 4px', lineHeight: 1 }}>E1 Move</h1>
+        <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: 0 }}>Train · Track · Progress</p>
+      </div>
+    </div>
+  )
+}
+
 function RequireAuth({ children }) {
   const { user, loading } = useAuth()
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--bg)' }}>
+      <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid var(--text)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
     </div>
   )
   return user ? children : <Navigate to="/auth" replace />
@@ -21,10 +41,18 @@ function RequireAuth({ children }) {
 
 export default function App() {
   const { user, loading } = useAuth()
+  const [showSplash, setShowSplash] = useState(true)
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowSplash(false), 2200)
+    return () => clearTimeout(t)
+  }, [])
+
+  if (showSplash) return <SplashScreen />
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--bg)' }}>
+      <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid var(--text)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
     </div>
   )
 
@@ -41,12 +69,7 @@ export default function App() {
         <Route path="exercise/:exerciseId" element={<ExerciseProgress />} />
       </Route>
 
-      {/* Full-screen workout — no bottom nav */}
-      <Route
-        path="/workout/:sessionId"
-        element={<RequireAuth><ActiveWorkout /></RequireAuth>}
-      />
-
+      <Route path="/workout/:sessionId" element={<RequireAuth><ActiveWorkout /></RequireAuth>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

@@ -38,8 +38,8 @@ export default function Auth() {
   return (
     <div style={{ background: '#000', minHeight: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* Illustration — top half */}
-      <div style={{ flex: '0 0 52%', position: 'relative', overflow: 'hidden', background: '#000' }}>
+      {/* Illustration — cropped to figure */}
+      <div style={{ height: '62vh', flexShrink: 0, position: 'relative', overflow: 'hidden', background: '#000' }}>
         <img
           src="/splash.png"
           alt=""
