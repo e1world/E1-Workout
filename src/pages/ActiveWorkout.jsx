@@ -8,14 +8,12 @@ export default function ActiveWorkout() {
   const navigate = useNavigate()
 
   const [session, setSession] = useState(null)
-  const [exercises, setExercises] = useState([]) // program_exercises for this day
-  // setLogs: { [exerciseId]: [{set_number, actual_reps, weight, completed, id}] }
+  const [exercises, setExercises] = useState([])
   const [setLogs, setSetLogs] = useState({})
   const [loading, setLoading] = useState(true)
   const [finishing, setFinishing] = useState(false)
-  const [progressions, setProgressions] = useState([]) // shown after finish
+  const [progressions, setProgressions] = useState([])
   const [elapsed, setElapsed] = useState(0)
-  const [editingCell, setEditingCell] = useState(null) // "exId-setNum-field"
   const timerRef = useRef(null)
   const startRef = useRef(Date.now())
 
@@ -45,7 +43,6 @@ export default function ActiveWorkout() {
 
     setExercises(exs || [])
 
-    // Pre-populate set logs with current_weight and target reps
     const logs = {}
     for (const ex of exs || []) {
       logs[ex.id] = Array.from({ length: ex.sets }, (_, i) => ({
@@ -53,7 +50,6 @@ export default function ActiveWorkout() {
         actual_reps: null,
         weight: parseFloat(ex.current_weight),
         completed: false,
-        id: null, // no DB row yet
       }))
     }
     setSetLogs(logs)
@@ -73,9 +69,7 @@ export default function ActiveWorkout() {
     setSetLogs((prev) => {
       const sets = [...prev[exerciseId]]
       const set = sets[setIdx]
-      // Can only complete if reps filled in
       if (set.actual_reps === null && !set.completed) {
-        // Auto-fill with rep_max as a nudge
         const ex = exercises.find((e) => e.id === exerciseId)
         sets[setIdx] = { ...set, actual_reps: ex?.rep_max ?? set.actual_reps, completed: true }
       } else {
@@ -93,8 +87,7 @@ export default function ActiveWorkout() {
 
   function exerciseProgress(exerciseId) {
     const sets = setLogs[exerciseId] || []
-    const done = sets.filter((s) => s.completed).length
-    return { done, total: sets.length }
+    return { done: sets.filter((s) => s.completed).length, total: sets.length }
   }
 
   function totalProgress() {
@@ -106,14 +99,14 @@ export default function ActiveWorkout() {
     return { done, total }
   }
 
+  const isRestDay = !loading && exercises.length === 0
+
   async function finishWorkout() {
     setFinishing(true)
     try {
-      // Save all completed sets
       const allLogs = []
       for (const ex of exercises) {
-        const sets = setLogs[ex.id] || []
-        for (const s of sets) {
+        for (const s of setLogs[ex.id] || []) {
           if (s.completed) {
             allLogs.push({
               session_id: sessionId,
@@ -130,21 +123,14 @@ export default function ActiveWorkout() {
         }
       }
 
-      if (allLogs.length > 0) {
-        await supabase.from('set_logs').insert(allLogs)
-      }
+      if (allLogs.length > 0) await supabase.from('set_logs').insert(allLogs)
 
-      // Mark session complete
       await supabase
         .from('workout_sessions')
         .update({ completed_at: new Date().toISOString() })
         .eq('id', sessionId)
 
-      // Run progression check
-      const completedSets = allLogs
-      const progs = checkProgression(completedSets, exercises)
-
-      // Apply weight increases
+      const progs = checkProgression(allLogs, exercises)
       for (const p of progs) {
         await supabase
           .from('program_exercises')
@@ -152,11 +138,8 @@ export default function ActiveWorkout() {
           .eq('id', p.exerciseId)
       }
 
-      if (progs.length > 0) {
-        setProgressions(progs)
-      } else {
-        navigate('/')
-      }
+      if (progs.length > 0) setProgressions(progs)
+      else navigate('/')
     } catch (err) {
       alert(err.message)
       setFinishing(false)
@@ -164,35 +147,71 @@ export default function ActiveWorkout() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-screen bg-gray-900">
-      <div className="w-8 h-8 border-4 border-white/30 border-t-transparent rounded-full animate-spin" />
+    <div className="flex items-center justify-center h-screen" style={{ background: 'var(--bg)' }}>
+      <div className="w-7 h-7 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--text)', borderTopColor: 'transparent' }} />
     </div>
   )
 
-  // Progression celebration screen
+  // Progression celebration
   if (progressions.length > 0) {
     return (
-      <div className="min-h-screen bg-gray-900 flex flex-col items-center justify-center px-6 text-center">
-        <div className="text-6xl mb-4">🎉</div>
-        <h1 className="text-2xl font-bold text-white mb-2">Nice work!</h1>
-        <p className="text-gray-400 mb-8">You hit new PRs — weights increased for next session:</p>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center" style={{ background: 'var(--bg)' }}>
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text)' }}>Nice work.</h1>
+        <p className="text-sm mb-8" style={{ color: 'var(--text-2)' }}>Weights increased for next session:</p>
         <div className="w-full max-w-sm space-y-3 mb-10">
           {progressions.map((p) => (
-            <div key={p.exerciseId} className="bg-gray-800 rounded-2xl px-5 py-4 text-left">
-              <p className="text-white font-semibold">{p.exerciseName}</p>
-              <p className="text-gray-200 text-sm mt-1">
-                {p.oldWeight} → <span className="font-bold">{p.newWeight} {p.unit}</span>
-                <span className="text-gray-500 ml-2">(+{p.newWeight - p.oldWeight})</span>
+            <div key={p.exerciseId} className="rounded-2xl px-5 py-4 text-left" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+              <p className="font-semibold" style={{ color: 'var(--text)' }}>{p.exerciseName}</p>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-2)' }}>
+                {p.oldWeight} <span style={{ color: 'var(--text-3)' }}>→</span> <span className="font-bold" style={{ color: 'var(--text)' }}>{p.newWeight} {p.unit}</span>
+                <span className="ml-2" style={{ color: 'var(--text-3)' }}>(+{p.newWeight - p.oldWeight})</span>
               </p>
             </div>
           ))}
         </div>
         <button
           onClick={() => navigate('/')}
-          className="bg-white text-white font-bold px-10 py-4 rounded-2xl text-base"
+          className="font-bold px-10 py-4 rounded-2xl text-base"
+          style={{ background: 'var(--text)', color: 'var(--bg)' }}
         >
           Done
         </button>
+      </div>
+    )
+  }
+
+  // Rest / run day — no exercises
+  if (isRestDay) {
+    return (
+      <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+        <div className="sticky top-0 z-10 px-4 pt-12 pb-3" style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
+          <div className="flex items-center justify-between">
+            <button onClick={() => { if (confirm('Abandon session?')) navigate('/') }}>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-2)' }}>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <div className="text-center">
+              <h1 className="font-bold" style={{ color: 'var(--text)' }}>{session?.day_name}</h1>
+              <p className="text-xs" style={{ color: 'var(--text-3)' }}>{formatTime(elapsed)}</p>
+            </div>
+            <div className="w-8" />
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
+          <p className="text-4xl mb-4">—</p>
+          <h2 className="text-xl font-semibold mb-2" style={{ color: 'var(--text)' }}>{session?.day_name}</h2>
+          <p className="text-sm mb-10" style={{ color: 'var(--text-3)' }}>No exercises — log this day as complete.</p>
+          <button
+            onClick={finishWorkout}
+            disabled={finishing}
+            className="font-bold px-10 py-4 rounded-2xl text-base disabled:opacity-40"
+            style={{ background: 'var(--text)', color: 'var(--bg)' }}
+          >
+            {finishing ? 'Saving...' : 'Mark Complete'}
+          </button>
+        </div>
       </div>
     )
   }
@@ -201,67 +220,52 @@ export default function ActiveWorkout() {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Sticky header */}
-      <div className="sticky top-0 bg-gray-900/95 backdrop-blur-sm z-10 px-4 pt-12 pb-3 border-b border-gray-800">
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg)' }}>
+      {/* Header */}
+      <div className="sticky top-0 z-10 px-4 pt-12 pb-3" style={{ background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
         <div className="flex items-center justify-between mb-2">
-          <button
-            onClick={() => { if (confirm('Abandon workout?')) navigate('/') }}
-            className="text-gray-400 hover:text-white"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <button onClick={() => { if (confirm('Abandon workout?')) navigate('/') }}>
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-2)' }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
           <div className="text-center">
-            <h1 className="text-white font-bold">{session?.day_name}</h1>
-            <p className="text-gray-400 text-xs">{formatTime(elapsed)}</p>
+            <h1 className="font-bold" style={{ color: 'var(--text)' }}>{session?.day_name}</h1>
+            <p className="text-xs" style={{ color: 'var(--text-3)' }}>{formatTime(elapsed)}</p>
           </div>
           <button
             onClick={finishWorkout}
             disabled={finishing || done === 0}
-            className="bg-white hover:bg-white active:bg-gray-200 text-white text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-40"
+            className="text-sm font-bold px-4 py-2 rounded-xl disabled:opacity-30"
+            style={{ background: 'var(--text)', color: 'var(--bg)' }}
           >
-            {finishing ? '…' : 'Finish'}
+            {finishing ? '...' : 'Finish'}
           </button>
         </div>
-        {/* Progress bar */}
-        <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-300"
-            style={{ width: `${pct}%` }}
-          />
+        <div className="h-0.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+          <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: 'var(--text)' }} />
         </div>
-        <p className="text-right text-xs text-gray-500 mt-1">{done}/{total} sets</p>
+        <p className="text-right text-xs mt-1" style={{ color: 'var(--text-3)' }}>{done}/{total} sets</p>
       </div>
 
-      {/* Exercise list */}
+      {/* Exercises */}
       <div className="flex-1 px-4 py-4 pb-10 space-y-4 max-w-lg mx-auto w-full">
         {exercises.map((ex) => {
           const sets = setLogs[ex.id] || []
           const { done: exDone, total: exTotal } = exerciseProgress(ex.id)
           const allDone = exDone === exTotal && exTotal > 0
           return (
-            <div
-              key={ex.id}
-              className={`bg-gray-800 rounded-2xl overflow-hidden border ${
-                allDone ? 'border-white/15' : 'border-gray-700'
-              }`}
-            >
-              {/* Exercise header */}
+            <div key={ex.id} className="rounded-2xl overflow-hidden" style={{ background: 'var(--surface-2)', border: `1px solid ${allDone ? 'var(--border-2)' : 'var(--border)'}` }}>
               <div className="px-4 py-3 flex items-center justify-between">
                 <div>
-                  <h3 className="text-white font-semibold">{ex.name}</h3>
-                  <p className="text-gray-400 text-xs">
+                  <h3 className="font-semibold" style={{ color: 'var(--text)' }}>{ex.name}</h3>
+                  <p className="text-xs" style={{ color: 'var(--text-3)' }}>
                     {ex.sets} sets · {ex.rep_min}–{ex.rep_max} reps · {ex.current_weight} {ex.weight_unit}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {allDone && <span className="text-gray-200 text-lg">✓</span>}
-                  <button
-                    onClick={() => navigate(`/exercise/${ex.id}`)}
-                    className="text-gray-500 hover:text-gray-300"
-                  >
+                  {allDone && <span className="text-sm font-bold" style={{ color: 'var(--text-2)' }}>✓</span>}
+                  <button onClick={() => navigate(`/exercise/${ex.id}`)} style={{ color: 'var(--text-3)' }}>
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
@@ -269,10 +273,8 @@ export default function ActiveWorkout() {
                 </div>
               </div>
 
-              {/* Set table */}
               <div className="px-4 pb-4">
-                {/* Column headers */}
-                <div className="grid grid-cols-12 gap-1 text-xs text-gray-500 mb-1 px-1">
+                <div className="grid grid-cols-12 gap-1 text-xs mb-1 px-1" style={{ color: 'var(--text-3)' }}>
                   <span className="col-span-1">SET</span>
                   <span className="col-span-4 text-center">WEIGHT</span>
                   <span className="col-span-4 text-center">REPS</span>
@@ -282,56 +284,48 @@ export default function ActiveWorkout() {
                 {sets.map((set, idx) => (
                   <div
                     key={idx}
-                    className={`grid grid-cols-12 gap-1 items-center mb-1.5 rounded-xl px-1 py-1.5 transition-colors ${
-                      set.completed ? 'bg-white/5' : 'bg-gray-700/40'
-                    }`}
+                    className="grid grid-cols-12 gap-1 items-center mb-1.5 rounded-xl px-1 py-1.5"
+                    style={{ background: set.completed ? 'rgba(240,236,228,0.06)' : 'var(--surface-3)' }}
                   >
-                    {/* Set number */}
-                    <span className={`col-span-1 text-sm font-medium ${set.completed ? 'text-gray-200' : 'text-gray-400'}`}>
+                    <span className="col-span-1 text-sm font-medium" style={{ color: set.completed ? 'var(--text)' : 'var(--text-3)' }}>
                       {idx + 1}
                     </span>
 
-                    {/* Weight input */}
-                    <div className="col-span-4 flex items-center justify-center">
+                    <div className="col-span-4">
                       <input
                         type="number"
                         value={set.weight ?? ''}
                         onChange={(e) => updateSet(ex.id, idx, 'weight', e.target.value)}
-                        className="w-full text-center bg-gray-700 text-white rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-white"
+                        className="w-full text-center rounded-lg py-1.5 text-sm focus:outline-none"
+                        style={{ background: 'var(--surface)', color: 'var(--text)', border: '1px solid var(--border)' }}
                         placeholder={`${ex.current_weight}`}
-                        step="2.5"
-                        min="0"
-                        inputMode="decimal"
+                        step="2.5" min="0" inputMode="decimal"
                       />
                     </div>
 
-                    {/* Reps input */}
-                    <div className="col-span-4 flex items-center justify-center">
+                    <div className="col-span-4">
                       <input
                         type="number"
                         value={set.actual_reps ?? ''}
                         onChange={(e) => updateSet(ex.id, idx, 'actual_reps', e.target.value)}
-                        className={`w-full text-center bg-gray-700 rounded-lg py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-white ${
-                          set.actual_reps !== null
-                            ? repStatusClass(set.actual_reps, ex.rep_min, ex.rep_max)
-                            : 'text-gray-400'
+                        className={`w-full text-center rounded-lg py-1.5 text-sm focus:outline-none ${
+                          set.actual_reps !== null ? repStatusClass(set.actual_reps, ex.rep_min, ex.rep_max) : ''
                         }`}
+                        style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: set.actual_reps === null ? 'var(--text-3)' : undefined }}
                         placeholder={`${ex.rep_min}–${ex.rep_max}`}
-                        min="0"
-                        max="100"
-                        inputMode="numeric"
+                        min="0" max="100" inputMode="numeric"
                       />
                     </div>
 
-                    {/* Complete toggle */}
                     <div className="col-span-3 flex justify-center">
                       <button
                         onClick={() => toggleComplete(ex.id, idx)}
-                        className={`w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-90 ${
-                          set.completed
-                            ? 'bg-white border-white/30 text-white'
-                            : 'border-gray-600 text-transparent'
-                        }`}
+                        className="w-9 h-9 rounded-full border-2 flex items-center justify-center transition-all active:scale-90"
+                        style={{
+                          background: set.completed ? 'var(--text)' : 'transparent',
+                          borderColor: set.completed ? 'var(--text)' : 'var(--border-2)',
+                          color: set.completed ? 'var(--bg)' : 'transparent',
+                        }}
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -341,10 +335,9 @@ export default function ActiveWorkout() {
                   </div>
                 ))}
 
-                {/* Progression hint */}
                 {allDone && sets.every((s) => s.actual_reps >= ex.rep_max) && (
-                  <p className="text-gray-200 text-xs mt-2 text-center">
-                    🔥 All sets at max reps — weight goes up {ex.weight_increment}{ex.weight_unit} next session!
+                  <p className="text-xs mt-2 text-center" style={{ color: 'var(--text-2)' }}>
+                    All sets at max — weight increases {ex.weight_increment}{ex.weight_unit} next session
                   </p>
                 )}
               </div>
@@ -353,14 +346,15 @@ export default function ActiveWorkout() {
         })}
       </div>
 
-      {/* Finish button (bottom) */}
-      <div className="sticky bottom-0 px-4 py-4 bg-gray-900/95 backdrop-blur-sm border-t border-gray-800 safe-bottom">
+      {/* Bottom finish */}
+      <div className="sticky bottom-0 px-4 py-4 safe-bottom" style={{ background: 'var(--bg)', borderTop: '1px solid var(--border)' }}>
         <button
           onClick={finishWorkout}
           disabled={finishing || done === 0}
-          className="w-full bg-white hover:bg-white active:bg-gray-200 disabled:opacity-40 text-white font-bold py-4 rounded-2xl text-base transition-colors"
+          className="w-full font-bold py-4 rounded-2xl text-base disabled:opacity-30"
+          style={{ background: 'var(--text)', color: 'var(--bg)' }}
         >
-          {finishing ? 'Saving…' : `Finish Workout (${done}/${total} sets)`}
+          {finishing ? 'Saving...' : `Finish Workout (${done}/${total} sets)`}
         </button>
       </div>
     </div>
