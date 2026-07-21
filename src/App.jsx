@@ -10,16 +10,27 @@ import ActiveWorkout from './pages/ActiveWorkout'
 import History from './pages/History'
 import ExerciseProgress from './pages/ExerciseProgress'
 
-function SplashScreen() {
+function SplashScreen({ opacity }) {
   return (
-    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease' }}>
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+        {/* Sun circle — top right corner, behind figure */}
+        <div style={{
+          position: 'absolute',
+          width: '65vw',
+          height: '65vw',
+          borderRadius: '50%',
+          background: '#6b1414',
+          top: 'calc(-65vw / 2)',
+          right: 'calc(-65vw / 2)',
+          zIndex: 1,
+        }} />
         <img
           src="/splash.png"
           alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+          style={{ position: 'relative', zIndex: 2, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
         />
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '140px', background: 'linear-gradient(to bottom, transparent, #0d0d0d)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '140px', background: 'linear-gradient(to bottom, transparent, #0d0d0d)', pointerEvents: 'none', zIndex: 3 }} />
       </div>
       <div style={{ padding: '16px 28px 52px', background: '#0d0d0d', flexShrink: 0 }}>
         <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '40px', color: '#f0ece4', letterSpacing: '0.06em', margin: '0 0 4px', lineHeight: 1 }}>E1 Move</h1>
@@ -42,13 +53,16 @@ function RequireAuth({ children }) {
 export default function App() {
   const { user, loading } = useAuth()
   const [showSplash, setShowSplash] = useState(true)
+  const [splashOpacity, setSplashOpacity] = useState(0)
 
   useEffect(() => {
-    const t = setTimeout(() => setShowSplash(false), 2200)
-    return () => clearTimeout(t)
+    const fadeIn  = setTimeout(() => setSplashOpacity(1), 50)
+    const fadeOut = setTimeout(() => setSplashOpacity(0), 1800)
+    const done    = setTimeout(() => setShowSplash(false), 2400)
+    return () => { clearTimeout(fadeIn); clearTimeout(fadeOut); clearTimeout(done) }
   }, [])
 
-  if (showSplash) return <SplashScreen />
+  if (showSplash) return <SplashScreen opacity={splashOpacity} />
 
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--bg)' }}>
