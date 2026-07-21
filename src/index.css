@@ -2,13 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ──────────────────────────────────── */
+:root {
+  --bg:          #080c08;
+  --surface:     #0f140f;
+  --surface-2:   #161e16;
+  --surface-3:   #1c271c;
+  --border:      #253025;
+  --border-2:    #2e3d2e;
+  --green:       #3d9e60;
+  --green-bright:#4ade80;
+  --green-dim:   #1a4d2e;
+  --green-muted: #14532d;
+  --text:        #edf2ed;
+  --text-2:      #8ca98c;
+  --text-3:      #4d6b4d;
+}
+
 @layer base {
   html, body, #root {
     height: 100%;
-    background-color: #111827; /* gray-900 */
-    color: #f9fafb; /* gray-50 */
+    background-color: var(--bg);
+    color: var(--text);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    overscroll-behavior: none;
   }
 
   input[type='number']::-webkit-inner-spin-button,
@@ -16,13 +35,11 @@
     -webkit-appearance: none;
     margin: 0;
   }
+
+  * { -webkit-overflow-scrolling: touch; }
 }
 
 @layer utilities {
-  .safe-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 1rem);
-  }
-  .safe-top {
-    padding-top: env(safe-area-inset-top, 0);
-  }
+  .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 1rem); }
+  .safe-top    { padding-top: env(safe-area-inset-top, 0); }
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import Avatar from '../components/Avatar'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
@@ -9,17 +10,14 @@ export default function Dashboard() {
   const [activeProgram, setActiveProgram] = useState(null)
   const [days, setDays] = useState([])
   const [loading, setLoading] = useState(true)
-  const [starting, setStarting] = useState(null) // dayId being started
+  const [starting, setStarting] = useState(null)
   const [recentSession, setRecentSession] = useState(null)
 
-  useEffect(() => {
-    loadData()
-  }, [])
+  useEffect(() => { loadData() }, [])
 
   async function loadData() {
     setLoading(true)
-    // Load active program
-    const { data: programs } = await supabase
+    const { data: program } = await supabase
       .from('programs')
       .select('*')
       .eq('user_id', user.id)
@@ -27,17 +25,16 @@ export default function Dashboard() {
       .limit(1)
       .single()
 
-    if (programs) {
-      setActiveProgram(programs)
+    if (program) {
+      setActiveProgram(program)
       const { data: programDays } = await supabase
         .from('program_days')
         .select('*')
-        .eq('program_id', programs.id)
+        .eq('program_id', program.id)
         .order('day_order')
       setDays(programDays || [])
     }
 
-    // Load most recent session
     const { data: session } = await supabase
       .from('workout_sessions')
       .select('*, program_days(name)')
@@ -47,7 +44,6 @@ export default function Dashboard() {
       .limit(1)
       .single()
     setRecentSession(session)
-
     setLoading(false)
   }
 
@@ -55,70 +51,73 @@ export default function Dashboard() {
     setStarting(day.id)
     const { data: session, error } = await supabase
       .from('workout_sessions')
-      .insert({
-        user_id: user.id,
-        program_day_id: day.id,
-        day_name: day.name,
-      })
+      .insert({ user_id: user.id, program_day_id: day.id, day_name: day.name })
       .select()
       .single()
-
     if (error) { alert(error.message); setStarting(null); return }
     navigate(`/workout/${session.id}`)
   }
 
-  // Suggest the next day based on most recent session
   function suggestedDayIndex() {
     if (!recentSession || !days.length) return 0
-    const lastDayId = recentSession.program_day_id
-    const lastIdx = days.findIndex((d) => d.id === lastDayId)
+    const lastIdx = days.findIndex((d) => d.id === recentSession.program_day_id)
     return (lastIdx + 1) % days.length
   }
 
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+
   if (loading) return (
-    <div className="flex items-center justify-center h-full">
-      <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
+    <div className="flex items-center justify-center h-full" style={{ background: 'var(--bg)' }}>
+      <div className="w-7 h-7 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--green)', borderTopColor: 'transparent' }} />
     </div>
   )
 
   const suggestedIdx = suggestedDayIndex()
 
   return (
-    <div className="px-4 pt-12 pb-6 max-w-lg mx-auto">
+    <div className="px-4 pt-14 pb-6 max-w-lg mx-auto" style={{ background: 'var(--bg)', minHeight: '100%' }}>
+
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Today</h1>
-          <p className="text-gray-400 text-sm">
-            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          <p className="text-xs font-medium tracking-widest uppercase mb-0.5" style={{ color: 'var(--text-3)' }}>
+            {today}
           </p>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>
+            E1 Move
+          </h1>
         </div>
-        <button onClick={signOut} className="text-gray-500 hover:text-gray-300 text-sm">
-          Sign out
+        <button onClick={signOut} className="p-1">
+          <Avatar size={42} />
         </button>
       </div>
 
       {!activeProgram ? (
-        <div className="bg-gray-800 rounded-2xl p-6 text-center">
-          <p className="text-gray-400 mb-4">No active program yet.</p>
+        <div className="rounded-2xl p-8 text-center" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
+          <p className="mb-4" style={{ color: 'var(--text-2)' }}>No active program.</p>
           <button
             onClick={() => navigate('/programs/new')}
-            className="bg-green-500 text-white font-semibold px-6 py-3 rounded-xl"
+            className="font-semibold px-6 py-3 rounded-xl"
+            style={{ background: 'var(--green)', color: '#fff' }}
           >
-            Create your first program
+            Create a program
           </button>
         </div>
       ) : (
         <>
-          {/* Active program banner */}
-          <div className="bg-gray-800 rounded-2xl px-4 py-3 mb-4 flex items-center justify-between">
+          {/* Active program pill */}
+          <div
+            className="rounded-2xl px-4 py-3 mb-4 flex items-center justify-between"
+            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}
+          >
             <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide">Active program</p>
-              <p className="text-white font-semibold">{activeProgram.name}</p>
+              <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-3)' }}>Active</p>
+              <p className="font-semibold" style={{ color: 'var(--text)' }}>{activeProgram.name}</p>
             </div>
             <button
               onClick={() => navigate(`/programs/${activeProgram.id}/edit`)}
-              className="text-gray-500 hover:text-gray-300 text-sm"
+              className="text-sm"
+              style={{ color: 'var(--text-3)' }}
             >
               Edit
             </button>
@@ -126,11 +125,16 @@ export default function Dashboard() {
 
           {/* Last session */}
           {recentSession && (
-            <div className="bg-gray-800/60 rounded-xl px-4 py-2 mb-4 flex items-center gap-3">
-              <span className="text-green-400 text-lg">✓</span>
+            <div
+              className="rounded-xl px-4 py-2.5 mb-5 flex items-center gap-3"
+              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            >
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--green)' }} />
               <div>
-                <p className="text-gray-300 text-sm">Last: <span className="text-white">{recentSession.day_name || recentSession.program_days?.name}</span></p>
-                <p className="text-gray-500 text-xs">
+                <p className="text-sm" style={{ color: 'var(--text-2)' }}>
+                  Last: <span style={{ color: 'var(--text)' }}>{recentSession.day_name || recentSession.program_days?.name}</span>
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
                   {new Date(recentSession.completed_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                 </p>
               </div>
@@ -138,8 +142,10 @@ export default function Dashboard() {
           )}
 
           {/* Day cards */}
-          <h2 className="text-gray-400 text-sm uppercase tracking-wide mb-3">Pick a workout</h2>
-          <div className="space-y-3">
+          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }}>
+            Select workout
+          </p>
+          <div className="space-y-2.5">
             {days.map((day, idx) => {
               const isSuggested = idx === suggestedIdx
               return (
@@ -147,31 +153,30 @@ export default function Dashboard() {
                   key={day.id}
                   onClick={() => startWorkout(day)}
                   disabled={!!starting}
-                  className={`w-full text-left rounded-2xl px-5 py-4 transition-all active:scale-95 ${
-                    isSuggested
-                      ? 'bg-green-500/20 border border-green-500/50'
-                      : 'bg-gray-800 border border-gray-700'
-                  } ${starting === day.id ? 'opacity-60' : ''}`}
+                  className="w-full text-left rounded-2xl px-5 py-4 transition-all active:scale-95 flex items-center justify-between"
+                  style={{
+                    background: isSuggested ? 'var(--green-dim)' : 'var(--surface-2)',
+                    border: `1px solid ${isSuggested ? 'var(--green-muted)' : 'var(--border)'}`,
+                    opacity: starting && starting !== day.id ? 0.5 : 1,
+                  }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      {isSuggested && (
-                        <span className="text-xs text-green-400 font-medium uppercase tracking-wide">
-                          Up next
-                        </span>
-                      )}
-                      <p className="text-white font-semibold text-lg">{day.name}</p>
-                      <p className="text-gray-400 text-sm">Day {day.day_order}</p>
-                    </div>
-                    <div className="text-green-400">
-                      {starting === day.id ? (
-                        <div className="w-5 h-5 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      )}
-                    </div>
+                  <div>
+                    {isSuggested && (
+                      <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--green-bright)' }}>
+                        Up next
+                      </p>
+                    )}
+                    <p className="font-semibold text-lg" style={{ color: 'var(--text)' }}>{day.name}</p>
+                    <p className="text-sm" style={{ color: 'var(--text-3)' }}>Day {day.day_order}</p>
+                  </div>
+                  <div>
+                    {starting === day.id ? (
+                      <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--green)', borderTopColor: 'transparent' }} />
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: isSuggested ? 'var(--green-bright)' : 'var(--text-3)' }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    )}
                   </div>
                 </button>
               )
