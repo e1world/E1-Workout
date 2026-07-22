@@ -72,17 +72,19 @@ export default function Dashboard() {
           alt=""
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block', transform: isFemale ? 'scaleX(-1)' : 'none' }}
         />
-        {/* Sun accent */}
-        <div style={{
-          position: 'absolute',
-          width: '48vw', height: '48vw',
-          borderRadius: '50%',
-          background: '#8b1a1a',
-          top: 'calc(-24vw)',
-          ...(isFemale ? { left: 'calc(-24vw)' } : { right: 'calc(-24vw)' }),
-          zIndex: 2,
-          mixBlendMode: 'screen',
-        }} />
+        {/* Sun accent — male only; female image already has a sun baked in */}
+        {!isFemale && (
+          <div style={{
+            position: 'absolute',
+            width: '48vw', height: '48vw',
+            borderRadius: '50%',
+            background: '#8b1a1a',
+            top: 'calc(-24vw)',
+            right: 'calc(-24vw)',
+            zIndex: 2,
+            mixBlendMode: 'screen',
+          }} />
+        )}
         {/* Fade into content */}
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%',
