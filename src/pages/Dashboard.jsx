@@ -100,7 +100,7 @@ export default function Dashboard() {
         <div style={{ padding: '10px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <h1 style={{
             fontFamily: "'Oxanium', sans-serif",
-            fontWeight: 300, fontSize: '34px',
+            fontWeight: 300, fontSize: '52px',
             color: '#f0ece4', letterSpacing: '0.04em',
             margin: '0 0 2px', lineHeight: 1,
           }}>{profile?.code || 'E1'}</h1>
