@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useProfile } from '../context/ProfileContext'
 
 export default function Dashboard() {
   const { user } = useAuth()
+  const { profile } = useProfile()
   const navigate = useNavigate()
+  const avatarSrc = profile?.avatar_gender === 'f' ? '/splash_f.png' : '/splash.png'
   const [activeProgram, setActiveProgram] = useState(null)
   const [recentSession, setRecentSession] = useState(null)
   const [totalSessions, setTotalSessions] = useState(0)
@@ -64,7 +67,7 @@ export default function Dashboard() {
       {/* Truncated splash illustration */}
       <div style={{ height: '44vh', flexShrink: 0, position: 'relative', overflow: 'hidden', marginTop: '20px' }}>
         <img
-          src="/splash.png"
+          src={avatarSrc}
           alt=""
           style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
         />
@@ -96,7 +99,7 @@ export default function Dashboard() {
             fontWeight: 300, fontSize: '34px',
             color: '#f0ece4', letterSpacing: '0.04em',
             margin: '0 0 2px', lineHeight: 1,
-          }}>E1</h1>
+          }}>{profile?.code || 'E1'}</h1>
           <p style={{
             fontFamily: "'Oxanium', sans-serif",
             fontSize: '10px', letterSpacing: '0.2em',

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
+import { ProfileProvider, useProfile } from './context/ProfileContext'
 import Layout from './components/Layout'
 import Auth from './pages/Auth'
 import Dashboard from './pages/Dashboard'
@@ -11,6 +12,7 @@ import History from './pages/History'
 import ExerciseProgress from './pages/ExerciseProgress'
 import WorkoutPicker from './pages/WorkoutPicker'
 import Progress from './pages/Progress'
+import Onboarding from './pages/Onboarding'
 
 function SplashScreen({ opacity }) {
   return (
@@ -57,7 +59,6 @@ function RequireAuth({ children }) {
 }
 
 export default function App() {
-  const { user, loading } = useAuth()
   const [showSplash, setShowSplash] = useState(true)
   const [splashOpacity, setSplashOpacity] = useState(0)
 
@@ -70,11 +71,27 @@ export default function App() {
 
   if (showSplash) return <SplashScreen opacity={splashOpacity} />
 
-  if (loading) return (
+  return (
+    <ProfileProvider>
+      <AppRoutes />
+    </ProfileProvider>
+  )
+}
+
+function AppRoutes() {
+  const { user, loading } = useAuth()
+  const { profile, profileLoading } = useProfile()
+
+  if (loading || (user && profileLoading)) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: 'var(--bg)' }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid var(--text)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
     </div>
   )
+
+  // Show onboarding if logged in but not completed
+  if (user && !profile?.onboarding_completed) {
+    return <Onboarding onComplete={() => window.location.reload()} />
+  }
 
   return (
     <Routes>
