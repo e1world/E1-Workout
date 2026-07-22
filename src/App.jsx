@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { ProfileProvider, useProfile } from './context/ProfileContext'
@@ -59,18 +59,6 @@ function RequireAuth({ children }) {
 }
 
 export default function App() {
-  const [showSplash, setShowSplash] = useState(true)
-  const [splashOpacity, setSplashOpacity] = useState(0)
-
-  useEffect(() => {
-    const fadeIn  = setTimeout(() => setSplashOpacity(1), 50)
-    const fadeOut = setTimeout(() => setSplashOpacity(0), 1800)
-    const done    = setTimeout(() => setShowSplash(false), 2400)
-    return () => { clearTimeout(fadeIn); clearTimeout(fadeOut); clearTimeout(done) }
-  }, [])
-
-  if (showSplash) return <SplashScreen opacity={splashOpacity} />
-
   return (
     <ProfileProvider>
       <AppRoutes />

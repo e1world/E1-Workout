@@ -178,7 +178,7 @@ function makeCode(name) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function Onboarding({ onComplete }) {
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
   const { updateProfile } = useProfile()
 
   const [step, setStep] = useState(0)
@@ -243,7 +243,8 @@ export default function Onboarding({ onComplete }) {
 
       onComplete()
     } catch (err) {
-      alert(err.message)
+      console.error('Onboarding error:', err)
+      alert(`Setup failed: ${err.message}`)
       setSaving(false)
     }
   }
@@ -253,9 +254,12 @@ export default function Onboarding({ onComplete }) {
   return (
     <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingTop: 'env(safe-area-inset-top, 0)' }}>
 
-      {/* Progress bar (not on done step) */}
+      {/* Progress bar + sign out */}
       {current !== 'done' && (
         <div style={{ padding: '16px 24px 0', flexShrink: 0 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+            <button onClick={() => signOut()} style={{ background: 'none', border: 'none', color: '#525248', fontSize: '11px', fontFamily: "'Oxanium', sans-serif", letterSpacing: '0.1em', cursor: 'pointer', padding: 0 }}>Sign out</button>
+          </div>
           <div style={{ display: 'flex', gap: '4px' }}>
             {STEPS.slice(0, totalSteps).map((_, i) => (
               <div key={i} style={{
@@ -316,7 +320,6 @@ export default function Onboarding({ onComplete }) {
       {/* ── Step: Avatar ── */}
       {current === 'avatar' && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '32px 24px 40px' }}>
-          <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: '0 0 8px' }}>E1 Movement</p>
           <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '32px', color: '#f0ece4', margin: '0 0 32px', letterSpacing: '0.02em' }}>Choose your avatar</h1>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', flex: 1 }}>
