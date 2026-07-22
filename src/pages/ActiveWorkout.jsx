@@ -295,10 +295,16 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
   const scrollRef = useRef(null)
   const [onHistoryPanel, setOnHistoryPanel] = useState(false)
 
+  // Start scrolled to the exercise panel (panel 2, on the right)
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el) el.scrollLeft = el.scrollWidth / 2
+  }, [])
+
   function handleScroll() {
     const el = scrollRef.current
     if (!el) return
-    const atHistory = el.scrollLeft > el.clientWidth * 0.4
+    const atHistory = el.scrollLeft < el.clientWidth * 0.6
     setOnHistoryPanel(atHistory)
   }
 
@@ -328,7 +334,52 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
           borderRadius: '16px',
         }}
       >
-        {/* ── Panel 1: Live exercise ── */}
+        {/* ── Panel 1: History (left — swipe right to reveal) ── */}
+        <div style={{ ...cardStyle, borderColor: 'var(--border)', background: 'var(--surface)' }}>
+          <div style={{ padding: '12px 16px 8px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style={{ fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', margin: '0 0 2px' }}>← back to live</p>
+              <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text)', margin: 0 }}>{ex.name}</h3>
+            </div>
+            <p style={{ fontSize: '11px', color: 'var(--text-3)', margin: 0 }}>History</p>
+          </div>
+
+          <div style={{ padding: '12px 16px 14px' }}>
+            {exHistory.length === 0 ? (
+              <p style={{ fontSize: '13px', color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No history yet</p>
+            ) : (
+              exHistory.map((session, si) => (
+                <div key={si} style={{ marginBottom: si < exHistory.length - 1 ? '16px' : 0 }}>
+                  <p style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: '6px' }}>
+                    {fmtDate(session.date)}
+                  </p>
+                  {session.sets.map((s, i) => {
+                    const hitTarget = s.actual_reps >= s.target_reps
+                    return (
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'center', gap: '10px',
+                        padding: '5px 8px', borderRadius: '8px', marginBottom: '3px',
+                        background: 'var(--surface-2)',
+                      }}>
+                        <span style={{ fontSize: '11px', color: 'var(--text-3)', width: '16px' }}>#{s.set_number}</span>
+                        <span style={{ fontSize: '14px', color: 'var(--text)', fontWeight: 500 }}>{s.weight}</span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>{ex.weight_unit}</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-3)' }}>×</span>
+                        <span style={{ fontSize: '14px', color: hitTarget ? 'var(--text)' : '#c8a84b', fontWeight: 500 }}>
+                          {s.actual_reps}
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>reps</span>
+                        {hitTarget && <span style={{ fontSize: '11px', color: 'var(--text-2)', marginLeft: 'auto' }}>✓</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* ── Panel 2: Live exercise (right — default view) ── */}
         <div style={{ ...cardStyle }}>
           {/* Exercise header */}
           <div style={{ padding: '12px 16px 8px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -340,9 +391,8 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
               {allDone && <span style={{ fontSize: '13px', color: 'var(--text-2)' }}>✓</span>}
-              {/* Swipe hint — only when no history yet scrolled */}
               {exHistory.length > 0 && !onHistoryPanel && (
-                <span style={{ fontSize: '10px', color: 'var(--text-3)', letterSpacing: '0.06em' }}>history →</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-3)', letterSpacing: '0.06em' }}>← history</span>
               )}
               <button onClick={onNavigate} style={{ color: 'var(--text-3)', background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}>
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -412,57 +462,12 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
             )}
           </div>
         </div>
-
-        {/* ── Panel 2: History ── */}
-        <div style={{ ...cardStyle, borderColor: 'var(--border)', background: 'var(--surface)' }}>
-          <div style={{ padding: '12px 16px 8px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <p style={{ fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', margin: '0 0 2px' }}>← back to live</p>
-              <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text)', margin: 0 }}>{ex.name}</h3>
-            </div>
-            <p style={{ fontSize: '11px', color: 'var(--text-3)', margin: 0 }}>History</p>
-          </div>
-
-          <div style={{ padding: '12px 16px 14px' }}>
-            {exHistory.length === 0 ? (
-              <p style={{ fontSize: '13px', color: 'var(--text-3)', textAlign: 'center', padding: '20px 0' }}>No history yet</p>
-            ) : (
-              exHistory.map((session, si) => (
-                <div key={si} style={{ marginBottom: si < exHistory.length - 1 ? '16px' : 0 }}>
-                  <p style={{ fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-3)', marginBottom: '6px' }}>
-                    {fmtDate(session.date)}
-                  </p>
-                  {session.sets.map((s, i) => {
-                    const hitTarget = s.actual_reps >= s.target_reps
-                    return (
-                      <div key={i} style={{
-                        display: 'flex', alignItems: 'center', gap: '10px',
-                        padding: '5px 8px', borderRadius: '8px', marginBottom: '3px',
-                        background: 'var(--surface-2)',
-                      }}>
-                        <span style={{ fontSize: '11px', color: 'var(--text-3)', width: '16px' }}>#{s.set_number}</span>
-                        <span style={{ fontSize: '14px', color: 'var(--text)', fontWeight: 500 }}>{s.weight}</span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>{ex.weight_unit}</span>
-                        <span style={{ fontSize: '12px', color: 'var(--text-3)' }}>×</span>
-                        <span style={{ fontSize: '14px', color: hitTarget ? 'var(--text)' : '#c8a84b', fontWeight: 500 }}>
-                          {s.actual_reps}
-                        </span>
-                        <span style={{ fontSize: '11px', color: 'var(--text-3)' }}>reps</span>
-                        {hitTarget && <span style={{ fontSize: '11px', color: 'var(--text-2)', marginLeft: 'auto' }}>✓</span>}
-                      </div>
-                    )
-                  })}
-                </div>
-              ))
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Scroll position dots */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '5px', marginTop: '6px' }}>
-        <div style={{ width: 5, height: 5, borderRadius: '50%', background: onHistoryPanel ? 'var(--border-2)' : 'var(--text-2)', transition: 'background 0.2s' }} />
         <div style={{ width: 5, height: 5, borderRadius: '50%', background: onHistoryPanel ? 'var(--text-2)' : 'var(--border-2)', transition: 'background 0.2s' }} />
+        <div style={{ width: 5, height: 5, borderRadius: '50%', background: onHistoryPanel ? 'var(--border-2)' : 'var(--text-2)', transition: 'background 0.2s' }} />
       </div>
     </div>
   )
