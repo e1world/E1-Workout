@@ -39,7 +39,7 @@ export default function Auth() {
 
       {/* Sun */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
-        <div style={{ width: '52vw', height: '52vw', borderRadius: '50%', background: '#8b1a1a' }} />
+        <div style={{ width: '72vw', height: '72vw', borderRadius: '50%', background: '#8b1a1a' }} />
       </div>
 
       {/* Bottom panel */}
@@ -48,7 +48,7 @@ export default function Auth() {
         {/* App name */}
         <div style={{ marginBottom: '28px' }}>
           <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '40px', color: '#f0ece4', letterSpacing: '0.06em', margin: '0 0 4px', lineHeight: 1 }}>
-            Movement
+            Move
           </h1>
           <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: 0 }}>
             Train · Track · Progress
