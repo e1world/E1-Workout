@@ -67,9 +67,16 @@ export default function Progress() {
     <div style={{ background: 'var(--bg)', minHeight: '100%', padding: '28px 20px 60px', paddingTop: 'max(28px, env(safe-area-inset-top, 28px))' }}>
 
       {/* Header */}
-      <div style={{ marginBottom: '28px' }}>
-        <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-3)', margin: '0 0 4px' }}>E1</p>
-        <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '26px', fontWeight: 300, color: 'var(--text)', margin: 0, letterSpacing: '0.02em' }}>Progress</h1>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '28px' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--text-3)', flexShrink: 0 }}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div>
+          <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--text-3)', margin: '0 0 4px' }}>E1</p>
+          <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '26px', fontWeight: 300, color: 'var(--text)', margin: 0, letterSpacing: '0.02em' }}>Progress</h1>
+        </div>
       </div>
 
       {/* Stats row */}

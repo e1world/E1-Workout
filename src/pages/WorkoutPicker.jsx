@@ -59,7 +59,7 @@ export default function WorkoutPicker() {
   const suggestedIdx = suggestedDayIndex()
 
   return (
-    <div style={{ background: 'var(--bg)', minHeight: '100%', padding: '20px 20px 40px' }}>
+    <div style={{ background: 'var(--bg)', minHeight: '100%', padding: '20px 20px 40px', paddingTop: 'max(20px, env(safe-area-inset-top, 20px))' }}>
 
       {/* Back + header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
