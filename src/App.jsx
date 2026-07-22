@@ -13,12 +13,14 @@ import ExerciseProgress from './pages/ExerciseProgress'
 function SplashScreen({ opacity }) {
   return (
     <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease' }}>
+      {/* Spacer pushes figure down from top edge */}
+      <div style={{ height: '8vh', background: '#000', flexShrink: 0 }} />
       {/* Image area */}
-      <div style={{ height: '70vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ height: '65vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <img
           src="/splash.png"
           alt=""
-          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 12%', display: 'block' }}
+          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
         />
         {/* Sun — top-right corner, comes down to shoulder */}
         <div style={{
@@ -27,7 +29,7 @@ function SplashScreen({ opacity }) {
           height: '72vw',
           borderRadius: '50%',
           background: '#8b1a1a',
-          top: '-4vw',
+          top: 'calc(8vh - 36vw)',
           right: 'calc(-72vw / 2)',
           zIndex: 2,
           mixBlendMode: 'screen',
