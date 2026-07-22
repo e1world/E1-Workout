@@ -12,9 +12,20 @@ import ExerciseProgress from './pages/ExerciseProgress'
 
 function SplashScreen({ opacity }) {
   return (
-    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease' }}>
+    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease', position: 'relative' }}>
+      {/* Sun — absolutely positioned in top-right, stays above the figure */}
+      <div style={{
+        position: 'absolute',
+        width: '72vw',
+        height: '72vw',
+        borderRadius: '50%',
+        background: '#8b1a1a',
+        top: 'calc(-36vw)',
+        right: 'calc(-36vw)',
+        zIndex: 10,
+      }} />
       {/* Spacer pushes figure down from top edge */}
-      <div style={{ height: '8vh', background: '#000', flexShrink: 0 }} />
+      <div style={{ height: '10vh', background: '#000', flexShrink: 0 }} />
       {/* Image area */}
       <div style={{ height: '65vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <img
@@ -22,18 +33,6 @@ function SplashScreen({ opacity }) {
           alt=""
           style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
         />
-        {/* Sun — top-right corner, comes down to shoulder */}
-        <div style={{
-          position: 'absolute',
-          width: '72vw',
-          height: '72vw',
-          borderRadius: '50%',
-          background: '#8b1a1a',
-          top: 'calc(8vh - 36vw)',
-          right: 'calc(-72vw / 2)',
-          zIndex: 2,
-          mixBlendMode: 'screen',
-        }} />
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px', background: 'linear-gradient(to bottom, transparent, #0d0d0d)', pointerEvents: 'none', zIndex: 3 }} />
       </div>
       {/* Text area */}
