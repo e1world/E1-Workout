@@ -61,8 +61,11 @@ export default function Dashboard() {
   return (
     <div style={{ background: '#000', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
 
+      {/* Safe area spacer */}
+      <div style={{ height: 'env(safe-area-inset-top, 0px)', background: '#000', flexShrink: 0 }} />
+
       {/* Truncated splash illustration */}
-      <div style={{ height: '36vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      <div style={{ height: '52vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <img
           src="/splash.png"
           alt=""
