@@ -276,7 +276,7 @@ export default function Onboarding({ onComplete }) {
       {current === 'name' && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px 24px 40px' }}>
           <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '32px', color: '#f0ece4', margin: '0 0 8px', letterSpacing: '0.02em' }}>What's your name?</h1>
-          <p style={{ fontSize: '13px', color: '#525248', margin: '0 0 40px' }}>We'll generate your E1 code from it.</p>
+          <p style={{ fontSize: '13px', color: '#525248', margin: '0 0 40px' }}>Your first initial becomes your personal code.</p>
 
           <input
             type="text"
@@ -294,7 +294,7 @@ export default function Onboarding({ onComplete }) {
 
           {code && (
             <div style={{ marginTop: '20px', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-              <span style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '13px', color: '#525248', letterSpacing: '0.1em' }}>YOUR CODE</span>
+              <span style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '13px', color: '#525248', letterSpacing: '0.1em' }}>YOUR ID</span>
               <span style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '42px', fontWeight: 300, color: '#f0ece4', letterSpacing: '0.06em' }}>{code}</span>
             </div>
           )}
