@@ -97,26 +97,24 @@ export default function Dashboard() {
       <div style={{ flex: 1, background: '#0d0d0d', padding: '0 20px', paddingBottom: 'env(safe-area-inset-bottom, 24px)', display: 'flex', flexDirection: 'column' }}>
 
         {/* Wordmark */}
-        <div style={{ padding: '10px 0 0', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', position: 'relative' }}>
+        <div style={{ padding: '10px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch' }}>
             <h1 style={{
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 300, fontSize: '52px',
               color: '#f0ece4', letterSpacing: '0.04em',
-              margin: 0, lineHeight: 1, textAlign: 'center',
+              margin: 0, lineHeight: 1,
             }}>{profile?.code || 'E1'}</h1>
             <p style={{
               fontFamily: "'Oxanium', sans-serif",
               fontSize: '10px', color: '#525248',
-              margin: '1px 0 0', display: 'flex', justifyContent: 'space-between',
-              letterSpacing: 0, textTransform: 'uppercase',
-            }}>
-              {'Move'.toUpperCase().split('').map((c, i) => <span key={i}>{c}</span>)}
-            </p>
+              margin: '1px 0 0', textTransform: 'uppercase',
+              textAlign: 'justify', textAlignLast: 'justify',
+            }}>Move</p>
           </div>
           <button
             onClick={() => signOut()}
-            style={{ position: 'absolute', right: 0, top: '4px', background: 'none', border: 'none', color: '#525248', fontSize: '11px', fontFamily: "'Oxanium', sans-serif", letterSpacing: '0.1em', cursor: 'pointer', padding: '4px 0' }}
+            style={{ background: 'none', border: 'none', color: '#525248', fontSize: '11px', fontFamily: "'Oxanium', sans-serif", letterSpacing: '0.1em', cursor: 'pointer', padding: '4px 0', marginTop: '4px' }}
           >Sign out</button>
         </div>
 
