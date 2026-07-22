@@ -9,6 +9,8 @@ import ProgramBuilder from './pages/ProgramBuilder'
 import ActiveWorkout from './pages/ActiveWorkout'
 import History from './pages/History'
 import ExerciseProgress from './pages/ExerciseProgress'
+import WorkoutPicker from './pages/WorkoutPicker'
+import Progress from './pages/Progress'
 
 function SplashScreen({ opacity }) {
   return (
@@ -83,6 +85,8 @@ export default function App() {
         <Route path="programs" element={<Programs />} />
         <Route path="programs/new" element={<ProgramBuilder />} />
         <Route path="programs/:id/edit" element={<ProgramBuilder />} />
+        <Route path="workout-picker" element={<WorkoutPicker />} />
+        <Route path="progress" element={<Progress />} />
         <Route path="history" element={<History />} />
         <Route path="exercise/:exerciseId" element={<ExerciseProgress />} />
       </Route>
