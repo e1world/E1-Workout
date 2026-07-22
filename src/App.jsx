@@ -13,21 +13,21 @@ import ExerciseProgress from './pages/ExerciseProgress'
 function SplashScreen({ opacity }) {
   return (
     <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', opacity, transition: 'opacity 0.5s ease' }}>
-      {/* Image area — fixed height so waist lands right above text */}
-      <div style={{ height: '78vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+      {/* Image area */}
+      <div style={{ height: '70vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
         <img
           src="/splash.png"
           alt=""
-          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+          style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 12%', display: 'block' }}
         />
-        {/* Sun — top-right corner, radius reaches ~shoulder height */}
+        {/* Sun — top-right corner, comes down to shoulder */}
         <div style={{
           position: 'absolute',
           width: '72vw',
           height: '72vw',
           borderRadius: '50%',
           background: '#8b1a1a',
-          top: 'calc(-72vw / 2)',
+          top: '-4vw',
           right: 'calc(-72vw / 2)',
           zIndex: 2,
           mixBlendMode: 'screen',
@@ -36,8 +36,8 @@ function SplashScreen({ opacity }) {
       </div>
       {/* Text area */}
       <div style={{ flex: 1, padding: '12px 28px 48px', background: '#0d0d0d', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-        <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '40px', color: '#f0ece4', letterSpacing: '0.06em', margin: '0 0 4px', lineHeight: 1 }}>E1 Move</h1>
-        <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: 0 }}>Train · Track · Progress</p>
+        <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '52px', color: '#f0ece4', letterSpacing: '0.04em', margin: '0 0 2px', lineHeight: 1 }}>E1</h1>
+        <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: 0 }}>Movement</p>
       </div>
     </div>
   )
