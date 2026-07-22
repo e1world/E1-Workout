@@ -8,7 +8,8 @@ export default function Dashboard() {
   const { user } = useAuth()
   const { profile } = useProfile()
   const navigate = useNavigate()
-  const avatarSrc = profile?.avatar_gender === 'f' ? '/splash_f.png' : '/splash.png'
+  const isFemale = profile?.avatar_gender === 'f'
+  const avatarSrc = isFemale ? '/splash_f.png' : '/splash.png'
   const [activeProgram, setActiveProgram] = useState(null)
   const [recentSession, setRecentSession] = useState(null)
   const [totalSessions, setTotalSessions] = useState(0)
@@ -69,7 +70,7 @@ export default function Dashboard() {
         <img
           src={avatarSrc}
           alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block', transform: isFemale ? 'scaleX(-1)' : 'none' }}
         />
         {/* Sun accent */}
         <div style={{
@@ -77,7 +78,8 @@ export default function Dashboard() {
           width: '48vw', height: '48vw',
           borderRadius: '50%',
           background: '#8b1a1a',
-          top: 'calc(-24vw)', right: 'calc(-24vw)',
+          top: 'calc(-24vw)',
+          ...(isFemale ? { left: 'calc(-24vw)' } : { right: 'calc(-24vw)' }),
           zIndex: 2,
           mixBlendMode: 'screen',
         }} />
