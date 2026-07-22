@@ -38,26 +38,9 @@ export default function Auth() {
   return (
     <div style={{ background: '#000', minHeight: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-      {/* Illustration — cropped to figure */}
-      <div style={{ height: '62vh', flexShrink: 0, position: 'relative', overflow: 'hidden', background: '#000' }}>
-        <img
-          src="/splash.png"
-          alt=""
-          style={{
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center top',
-            display: 'block',
-          }}
-          onError={(e) => { e.target.style.display = 'none' }}
-        />
-        {/* Fade into dark bottom */}
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0, height: '120px',
-          background: 'linear-gradient(to bottom, transparent, #0d0d0d)',
-          pointerEvents: 'none',
-        }} />
+      {/* Sun */}
+      <div style={{ height: '38vh', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+        <div style={{ width: '52vw', height: '52vw', borderRadius: '50%', background: '#8b1a1a' }} />
       </div>
 
       {/* Bottom — app name + login form */}
