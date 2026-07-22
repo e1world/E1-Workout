@@ -96,24 +96,27 @@ export default function Dashboard() {
       {/* Content — fills remaining screen, cards spaced to bottom */}
       <div style={{ flex: 1, background: '#0d0d0d', padding: '0 20px', paddingBottom: 'env(safe-area-inset-bottom, 24px)', display: 'flex', flexDirection: 'column' }}>
 
-        {/* E1 title */}
-        <div style={{ padding: '10px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
+        {/* Wordmark */}
+        <div style={{ padding: '10px 0 0', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', position: 'relative' }}>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch' }}>
             <h1 style={{
               fontFamily: "'Oxanium', sans-serif",
               fontWeight: 300, fontSize: '52px',
               color: '#f0ece4', letterSpacing: '0.04em',
-              margin: 0, lineHeight: 1,
+              margin: 0, lineHeight: 1, textAlign: 'center',
             }}>{profile?.code || 'E1'}</h1>
             <p style={{
               fontFamily: "'Oxanium', sans-serif",
-              fontSize: '10px', letterSpacing: '0.2em',
-              textTransform: 'uppercase', color: '#525248', margin: '4px 0 0',
-            }}>Move</p>
+              fontSize: '10px', color: '#525248',
+              margin: '1px 0 0', display: 'flex', justifyContent: 'space-between',
+              letterSpacing: 0, textTransform: 'uppercase',
+            }}>
+              {'Move'.toUpperCase().split('').map((c, i) => <span key={i}>{c}</span>)}
+            </p>
           </div>
           <button
             onClick={() => signOut()}
-            style={{ background: 'none', border: 'none', color: '#525248', fontSize: '11px', fontFamily: "'Oxanium', sans-serif", letterSpacing: '0.1em', cursor: 'pointer', padding: '4px 0', marginTop: '4px' }}
+            style={{ position: 'absolute', right: 0, top: '4px', background: 'none', border: 'none', color: '#525248', fontSize: '11px', fontFamily: "'Oxanium', sans-serif", letterSpacing: '0.1em', cursor: 'pointer', padding: '4px 0' }}
           >Sign out</button>
         </div>
 
