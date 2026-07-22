@@ -59,10 +59,10 @@ export default function Dashboard() {
   ]
 
   return (
-    <div style={{ background: '#000', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ background: '#000', height: '100dvh', display: 'flex', flexDirection: 'column' }}>
 
       {/* Truncated splash illustration */}
-      <div style={{ height: '36vh', flexShrink: 0, position: 'relative', overflow: 'hidden', marginTop: '20px' }}>
+      <div style={{ height: '44vh', flexShrink: 0, position: 'relative', overflow: 'hidden', marginTop: '20px' }}>
         <img
           src="/splash.png"
           alt=""
@@ -86,11 +86,11 @@ export default function Dashboard() {
         }} />
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, background: '#0d0d0d', padding: '0 20px 40px' }}>
+      {/* Content — fills remaining screen, cards spaced to bottom */}
+      <div style={{ flex: 1, background: '#0d0d0d', padding: '0 20px', paddingBottom: 'env(safe-area-inset-bottom, 24px)', display: 'flex', flexDirection: 'column' }}>
 
         {/* E1 title */}
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ padding: '10px 0 0' }}>
           <h1 style={{
             fontFamily: "'Oxanium', sans-serif",
             fontWeight: 300, fontSize: '34px',
@@ -104,8 +104,8 @@ export default function Dashboard() {
           }}>Movement</p>
         </div>
 
-        {/* Module cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {/* Module cards — fill remaining space evenly */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', paddingBottom: '8px' }}>
           {modules.map((mod) => (
             <button
               key={mod.id}
