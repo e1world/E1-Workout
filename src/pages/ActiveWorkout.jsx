@@ -307,8 +307,9 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
     overflow: 'hidden',
     border: `1px solid ${allDone ? 'var(--border-2)' : 'var(--border)'}`,
     background: 'var(--surface-2)',
-    flexShrink: 0,
-    width: '100%',
+    flex: '0 0 100%',
+    minWidth: '100%',
+    scrollSnapAlign: 'start',
   }
 
   return (
@@ -413,7 +414,7 @@ function ExerciseCard({ ex, sets, allDone, exHistory, fmtDate, onUpdateSet, onTo
         </div>
 
         {/* ── Panel 2: History ── */}
-        <div style={{ ...cardStyle, flexShrink: 0, scrollSnapAlign: 'start', borderColor: 'var(--border)', background: 'var(--surface)' }}>
+        <div style={{ ...cardStyle, borderColor: 'var(--border)', background: 'var(--surface)' }}>
           <div style={{ padding: '12px 16px 8px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-3)', margin: '0 0 2px' }}>← back to live</p>
