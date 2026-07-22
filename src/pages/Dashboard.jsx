@@ -2,158 +2,147 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
-import Avatar from '../components/Avatar'
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [activeProgram, setActiveProgram] = useState(null)
-  const [days, setDays] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [starting, setStarting] = useState(null)
   const [recentSession, setRecentSession] = useState(null)
+  const [totalSessions, setTotalSessions] = useState(0)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => { loadData() }, [])
 
   async function loadData() {
-    setLoading(true)
     const { data: program } = await supabase
       .from('programs').select('*').eq('user_id', user.id).eq('is_active', true).limit(1).single()
-
-    if (program) {
-      setActiveProgram(program)
-      const { data: programDays } = await supabase
-        .from('program_days').select('*').eq('program_id', program.id).order('day_order')
-      setDays(programDays || [])
-    }
+    setActiveProgram(program)
 
     const { data: session } = await supabase
       .from('workout_sessions').select('*, program_days(name)')
       .eq('user_id', user.id).not('completed_at', 'is', null)
       .order('completed_at', { ascending: false }).limit(1).single()
     setRecentSession(session)
+
+    const { count } = await supabase
+      .from('workout_sessions').select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id).not('completed_at', 'is', null)
+    setTotalSessions(count || 0)
+
     setLoading(false)
   }
 
-  async function startWorkout(day) {
-    setStarting(day.id)
-    const { data: session, error } = await supabase
-      .from('workout_sessions')
-      .insert({ user_id: user.id, program_day_id: day.id, day_name: day.name })
-      .select().single()
-    if (error) { alert(error.message); setStarting(null); return }
-    navigate(`/workout/${session.id}`)
-  }
-
-  function suggestedDayIndex() {
-    if (!recentSession || !days.length) return 0
-    const lastIdx = days.findIndex((d) => d.id === recentSession.program_day_id)
-    return (lastIdx + 1) % days.length
-  }
-
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-
-  if (loading) return (
-    <div className="flex items-center justify-center h-full" style={{ background: 'var(--bg)' }}>
-      <div className="w-7 h-7 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--text)', borderTopColor: 'transparent' }} />
-    </div>
-  )
-
-  const suggestedIdx = suggestedDayIndex()
+  const modules = [
+    {
+      id: 'program',
+      label: 'Active Program',
+      sub: loading ? '—' : (activeProgram ? activeProgram.name : 'No active program'),
+      detail: loading ? '' : (recentSession
+        ? `Last: ${recentSession.day_name || recentSession.program_days?.name}`
+        : 'Start your first session'),
+      action: () => navigate('/workout-picker'),
+    },
+    {
+      id: 'progress',
+      label: 'Progress',
+      sub: loading ? '—' : `${totalSessions} session${totalSessions !== 1 ? 's' : ''} logged`,
+      detail: 'Analytics + progress photos',
+      action: () => navigate('/progress'),
+    },
+    {
+      id: 'create',
+      label: 'Create Program',
+      sub: 'Build a new program',
+      detail: 'Set days, exercises, weights',
+      action: () => navigate('/programs/new'),
+    },
+  ]
 
   return (
-    <div className="px-4 pt-14 pb-6 max-w-lg mx-auto" style={{ background: 'var(--bg)', minHeight: '100%' }}>
+    <div style={{ background: '#000', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
 
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-xs font-medium tracking-widest uppercase mb-0.5" style={{ color: 'var(--text-3)' }}>
-            {today}
-          </p>
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: 'var(--text)' }}>E1 Move</h1>
-        </div>
-        <button onClick={signOut}><Avatar size={42} /></button>
+      {/* Truncated splash illustration */}
+      <div style={{ height: '36vh', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+        <img
+          src="/splash.png"
+          alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+        />
+        {/* Sun accent */}
+        <div style={{
+          position: 'absolute',
+          width: '48vw', height: '48vw',
+          borderRadius: '50%',
+          background: '#8b1a1a',
+          top: 'calc(-24vw)', right: 'calc(-24vw)',
+          zIndex: 2,
+          mixBlendMode: 'screen',
+        }} />
+        {/* Fade into content */}
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, height: '70%',
+          background: 'linear-gradient(to bottom, transparent, #0d0d0d)',
+          zIndex: 3, pointerEvents: 'none',
+        }} />
       </div>
 
-      {!activeProgram ? (
-        <div className="rounded-2xl p-8 text-center" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-          <p className="mb-4" style={{ color: 'var(--text-2)' }}>No active program.</p>
-          <button
-            onClick={() => navigate('/programs/new')}
-            className="font-semibold px-6 py-3 rounded-xl"
-            style={{ background: 'var(--text)', color: 'var(--bg)' }}
-          >
-            Create a program
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="rounded-2xl px-4 py-3 mb-4 flex items-center justify-between"
-            style={{ background: 'var(--surface-2)', border: '1px solid var(--border)' }}>
-            <div>
-              <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: 'var(--text-3)' }}>Active</p>
-              <p className="font-semibold" style={{ color: 'var(--text)' }}>{activeProgram.name}</p>
-            </div>
-            <button onClick={() => navigate(`/programs/${activeProgram.id}/edit`)} className="text-sm" style={{ color: 'var(--text-3)' }}>
-              Edit
-            </button>
-          </div>
+      {/* Content */}
+      <div style={{ flex: 1, background: '#0d0d0d', padding: '0 20px 40px' }}>
 
-          {recentSession && (
-            <div className="rounded-xl px-4 py-2.5 mb-5 flex items-center gap-3"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: 'var(--text-2)' }} />
+        {/* E1 title */}
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{
+            fontFamily: "'Oxanium', sans-serif",
+            fontWeight: 300, fontSize: '34px',
+            color: '#f0ece4', letterSpacing: '0.04em',
+            margin: '0 0 2px', lineHeight: 1,
+          }}>E1</h1>
+          <p style={{
+            fontFamily: "'Oxanium', sans-serif",
+            fontSize: '10px', letterSpacing: '0.2em',
+            textTransform: 'uppercase', color: '#525248', margin: 0,
+          }}>Movement</p>
+        </div>
+
+        {/* Module cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          {modules.map((mod) => (
+            <button
+              key={mod.id}
+              onClick={mod.action}
+              style={{
+                width: '100%', textAlign: 'left',
+                background: '#1c1c1c',
+                border: '1px solid #2e2e2e',
+                borderRadius: '14px',
+                padding: '16px 18px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                cursor: 'pointer',
+              }}
+            >
               <div>
-                <p className="text-sm" style={{ color: 'var(--text-2)' }}>
-                  Last: <span style={{ color: 'var(--text)' }}>{recentSession.day_name || recentSession.program_days?.name}</span>
-                </p>
-                <p className="text-xs" style={{ color: 'var(--text-3)' }}>
-                  {new Date(recentSession.completed_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                <p style={{
+                  fontFamily: "'Oxanium', sans-serif",
+                  fontSize: '10px', letterSpacing: '0.18em',
+                  textTransform: 'uppercase', color: '#525248',
+                  margin: '0 0 4px',
+                }}>{mod.label}</p>
+                <p style={{
+                  fontFamily: "'Oxanium', sans-serif",
+                  fontSize: '17px', fontWeight: 400,
+                  color: '#f0ece4', margin: '0 0 2px', letterSpacing: '0.02em',
+                }}>{mod.sub}</p>
+                <p style={{ fontSize: '12px', color: '#525248', margin: 0, fontFamily: 'system-ui' }}>
+                  {mod.detail}
                 </p>
               </div>
-            </div>
-          )}
-
-          <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--text-3)' }}>Select workout</p>
-          <div className="space-y-2.5">
-            {days.map((day, idx) => {
-              const isSuggested = idx === suggestedIdx
-              return (
-                <button
-                  key={day.id}
-                  onClick={() => startWorkout(day)}
-                  disabled={!!starting}
-                  className="w-full text-left rounded-2xl px-5 py-4 transition-all active:scale-95 flex items-center justify-between"
-                  style={{
-                    background: isSuggested ? 'var(--surface-3)' : 'var(--surface-2)',
-                    border: `1px solid ${isSuggested ? 'var(--border-2)' : 'var(--border)'}`,
-                    opacity: starting && starting !== day.id ? 0.4 : 1,
-                  }}
-                >
-                  <div>
-                    {isSuggested && (
-                      <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'var(--text-2)' }}>
-                        Up next
-                      </p>
-                    )}
-                    <p className="font-semibold text-lg" style={{ color: 'var(--text)' }}>{day.name}</p>
-                    <p className="text-sm" style={{ color: 'var(--text-3)' }}>Day {day.day_order}</p>
-                  </div>
-                  <div>
-                    {starting === day.id ? (
-                      <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--text-2)', borderTopColor: 'transparent' }} />
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'var(--text-3)' }}>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    )}
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </>
-      )}
+              <svg width="18" height="18" fill="none" stroke="#525248" strokeWidth="1.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
