@@ -41,3 +41,7 @@
   .safe-bottom { padding-bottom: env(safe-area-inset-bottom, 1rem); }
   .safe-top    { padding-top: env(safe-area-inset-top, 0); }
 }
+
+/* Hide scrollbars on swipeable exercise cards */
+[style*="scrollSnapType"] ::-webkit-scrollbar { display: none; }
+*::-webkit-scrollbar { display: none; }
