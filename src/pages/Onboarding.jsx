@@ -157,7 +157,10 @@ const PROGRAMS = [
 
 function filterPrograms(goal, experience) {
   return PROGRAMS.filter((p) => {
-    const matchesGoal = goal === 'general' || p.tags.includes(goal)
+    const matchesGoal =
+      goal === 'muscle_strength' ? p.tags.some((t) => ['hypertrophy', 'strength'].includes(t)) :
+      goal === 'endurance'       ? p.tags.some((t) => ['general', 'endurance'].includes(t)) :
+      p.tags.includes('general') || p.tags.includes('beginner')
     const matchesExp = experience === 'intermediate'
       ? p.tags.some((t) => ['beginner', 'intermediate'].includes(t))
       : p.tags.includes(experience)
@@ -186,7 +189,7 @@ export default function Onboarding({ onComplete }) {
   const [selectedProgram, setSelectedProgram] = useState(null)
   const [saving, setSaving] = useState(false)
 
-  const STEPS = ['avatar', 'name', 'goal', 'experience', 'program', 'done']
+  const STEPS = ['name', 'avatar', 'goal', 'experience', 'program', 'done']
   const totalSteps = STEPS.length - 1 // don't count 'done'
   const code = makeCode(name)
 
@@ -265,49 +268,6 @@ export default function Onboarding({ onComplete }) {
         </div>
       )}
 
-      {/* ── Step: Avatar ── */}
-      {current === 'avatar' && (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '32px 24px 40px' }}>
-          <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: '0 0 8px' }}>E1 Movement</p>
-          <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '32px', color: '#f0ece4', margin: '0 0 32px', letterSpacing: '0.02em' }}>Choose your avatar</h1>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', flex: 1 }}>
-            {[
-              { key: 'm', src: '/splash.png', label: 'Male' },
-              { key: 'f', src: '/splash_f.png', label: 'Female' },
-            ].map(({ key, src, label }) => (
-              <button
-                key={key}
-                onClick={() => { setAvatar(key); setStep(1) }}
-                style={{
-                  background: avatar === key ? '#1c1c1c' : '#0d0d0d',
-                  border: `2px solid ${avatar === key ? '#f0ece4' : '#2e2e2e'}`,
-                  borderRadius: '16px',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  display: 'flex', flexDirection: 'column',
-                  transition: 'border-color 0.2s',
-                  padding: 0,
-                }}
-              >
-                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: '200px' }}>
-                  <img
-                    src={src}
-                    alt={label}
-                    onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
-                  />
-                  <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', minHeight: '200px', background: '#111' }}>
-                    <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '48px', fontWeight: 300, color: '#2e2e2e' }}>{key.toUpperCase()}</p>
-                  </div>
-                </div>
-                <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: avatar === key ? '#f0ece4' : '#525248', padding: '12px', margin: 0 }}>{label}</p>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ── Step: Name ── */}
       {current === 'name' && (
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '40px 24px 40px' }}>
@@ -337,7 +297,7 @@ export default function Onboarding({ onComplete }) {
 
           <div style={{ marginTop: 'auto' }}>
             <button
-              onClick={() => setStep(2)}
+              onClick={() => setStep(1)}
               disabled={!name.trim()}
               style={{
                 width: '100%', padding: '16px',
@@ -353,15 +313,57 @@ export default function Onboarding({ onComplete }) {
         </div>
       )}
 
+      {/* ── Step: Avatar ── */}
+      {current === 'avatar' && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '32px 24px 40px' }}>
+          <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '10px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#525248', margin: '0 0 8px' }}>E1 Movement</p>
+          <h1 style={{ fontFamily: "'Oxanium', sans-serif", fontWeight: 300, fontSize: '32px', color: '#f0ece4', margin: '0 0 32px', letterSpacing: '0.02em' }}>Choose your avatar</h1>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', flex: 1 }}>
+            {[
+              { key: 'm', src: '/splash.png', label: 'Male' },
+              { key: 'f', src: '/splash_f.png', label: 'Female' },
+            ].map(({ key, src, label }) => (
+              <button
+                key={key}
+                onClick={() => { setAvatar(key); setStep(2) }}
+                style={{
+                  background: avatar === key ? '#1c1c1c' : '#0d0d0d',
+                  border: `2px solid ${avatar === key ? '#f0ece4' : '#2e2e2e'}`,
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  cursor: 'pointer',
+                  display: 'flex', flexDirection: 'column',
+                  transition: 'border-color 0.2s',
+                  padding: 0,
+                }}
+              >
+                <div style={{ flex: 1, position: 'relative', overflow: 'hidden', minHeight: '200px' }}>
+                  <img
+                    src={src}
+                    alt={label}
+                    onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }}
+                  />
+                  <div style={{ display: 'none', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', minHeight: '200px', background: '#111' }}>
+                    <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '48px', fontWeight: 300, color: '#2e2e2e' }}>{key.toUpperCase()}</p>
+                  </div>
+                </div>
+                <p style={{ fontFamily: "'Oxanium', sans-serif", fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase', color: avatar === key ? '#f0ece4' : '#525248', padding: '12px', margin: 0 }}>{label}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Step: Goal ── */}
       {current === 'goal' && (
         <PickStep
           title="What's your primary goal?"
           subtitle="This shapes your program recommendations."
           options={[
-            { key: 'hypertrophy', label: 'Build muscle', sub: 'Hypertrophy — size and definition' },
-            { key: 'strength', label: 'Get stronger', sub: 'Strength — heavier weights, lower reps' },
-            { key: 'endurance', label: 'Build endurance', sub: 'Conditioning and work capacity' },
+            { key: 'muscle_strength', label: 'Build muscle & strength', sub: 'Hypertrophy and strength combined' },
+            { key: 'endurance', label: 'Endurance', sub: 'Conditioning and work capacity' },
             { key: 'general', label: 'General fitness', sub: 'Balanced strength and health' },
           ]}
           selected={goal}
