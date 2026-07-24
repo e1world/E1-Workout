@@ -96,3 +96,4 @@ src/
 └── components/
     └── Layout.jsx              Bottom navigation shell
 ```
+
