@@ -1,22 +1,466 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#000000" />
-    <title>Move</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;600&display=swap" rel="stylesheet" />
-    <link rel="icon" href="/icon-192.png" type="image/png" />
-    <link rel="apple-touch-icon-precomposed" href="/icon-180.png" />
-    <link rel="manifest" href="/manifest.json" />
-  </head>
-  <body style="background:#000;">
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eboworx — Custom platforms for real businesses.</title>
+<meta name="description" content="Eboworx builds custom platforms for small service businesses. Built for you, not for everyone."/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black:   #1a1a1a;
+    --green:   #1a3d2b;
+    --warm-bg: #fdfcf9;
+    --card-bg: #f7f4ef;
+    --border:  #e5e0d8;
+    --muted:   #7a7168;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: var(--black); background: var(--warm-bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* NAV */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 48px; border-bottom: 1px solid var(--border);
+    background: var(--warm-bg); position: sticky; top: 0; z-index: 100;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+  .nav-mark { width: 34px; height: 34px; background: var(--black); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .nav-name { font-size: 17px; font-weight: 800; color: var(--black); letter-spacing: -0.04em; }
+
+  /* HERO */
+  .hero { padding: 100px 48px 84px; max-width: 800px; margin: 0 auto; text-align: center; }
+  .hero h1 { font-size: clamp(38px, 6vw, 66px); font-weight: 900; letter-spacing: -0.05em; line-height: 1.04; color: var(--black); margin-bottom: 22px; }
+  .hero h1 em { font-style: normal; color: var(--green); }
+  .hero p { font-size: 17px; color: var(--muted); line-height: 1.7; max-width: 460px; margin: 0 auto 40px; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { background: var(--green); color: white; font-size: 15px; font-weight: 700; padding: 14px 32px; border-radius: 10px; border: none; cursor: pointer; transition: opacity 0.15s; font-family: inherit; }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-ghost { background: transparent; color: var(--muted); font-size: 15px; font-weight: 600; padding: 14px 24px; border-radius: 10px; border: 1.5px solid var(--border); cursor: pointer; transition: border-color 0.15s; font-family: inherit; }
+  .btn-ghost:hover { border-color: #c5bdb2; }
+
+  /* STATEMENT */
+  .statement { background: var(--black); padding: 72px 48px; text-align: center; }
+  .statement p { font-size: clamp(18px, 2.8vw, 26px); font-weight: 600; letter-spacing: -0.02em; color: rgba(255,255,255,0.88); line-height: 1.6; max-width: 620px; margin: 0 auto; }
+
+  /* SECTION */
+  .section { padding: 80px 48px; }
+  .section-inner { max-width: 860px; margin: 0 auto; }
+  .section-label { font-size: 11px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+  .section h2 { font-size: clamp(24px, 3.5vw, 34px); font-weight: 800; letter-spacing: -0.03em; color: var(--black); margin-bottom: 40px; line-height: 1.2; max-width: 520px; }
+
+  /* CARDS */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 26px; }
+  .card-num { font-size: 11px; font-weight: 800; color: var(--green); letter-spacing: 0.08em; margin-bottom: 10px; }
+  .card h3 { font-size: 15px; font-weight: 800; color: var(--black); margin-bottom: 7px; }
+  .card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* STEPS */
+  .how { background: var(--card-bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .steps { display: flex; flex-direction: column; }
+  .step-item { display: flex; gap: 22px; padding: 28px 0; border-bottom: 1px solid var(--border); }
+  .step-item:last-child { border-bottom: none; }
+  .step-num { width: 32px; height: 32px; background: var(--green); border-radius: 7px; color: white; font-size: 13px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-body h3 { font-size: 15px; font-weight: 800; color: var(--black); margin-bottom: 4px; }
+  .step-body p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* CTA */
+  .cta-band { padding: 88px 48px; text-align: center; border-top: 1px solid var(--border); }
+  .cta-band h2 { font-size: clamp(28px, 4.5vw, 48px); font-weight: 900; letter-spacing: -0.04em; color: var(--black); margin-bottom: 12px; }
+  .cta-band p { font-size: 16px; color: var(--muted); margin-bottom: 36px; max-width: 380px; margin-left: auto; margin-right: auto; line-height: 1.65; }
+
+  /* FOOTER */
+  footer { padding: 26px 48px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-brand { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+  .footer-mark { width: 26px; height: 26px; background: var(--black); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .footer-name { font-size: 14px; font-weight: 800; color: var(--black); letter-spacing: -0.03em; }
+  footer p { font-size: 12px; color: var(--muted); }
+
+  /* ── MODALS ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(15,15,15,0.7); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--warm-bg); border-radius: 20px;
+    width: 100%; max-width: 520px;
+    padding: 40px; position: relative;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 18px; right: 20px;
+    background: none; border: none; cursor: pointer;
+    font-size: 22px; color: var(--muted); line-height: 1;
+    font-family: inherit;
+  }
+  .modal-close:hover { color: var(--black); }
+
+  /* Typeform modal */
+  .tf-step { display: none; }
+  .tf-step.active { display: block; }
+  .tf-label { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+  .tf-question { font-size: clamp(20px, 3vw, 26px); font-weight: 800; letter-spacing: -0.03em; color: var(--black); margin-bottom: 24px; line-height: 1.2; }
+  .tf-input {
+    width: 100%; border: none; border-bottom: 2px solid var(--border);
+    background: transparent; padding: 10px 0; font-size: 17px;
+    color: var(--black); font-family: inherit; outline: none;
+    transition: border-color 0.2s;
+  }
+  .tf-input:focus { border-color: var(--green); }
+  .tf-textarea {
+    width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+    background: transparent; padding: 12px; font-size: 15px;
+    color: var(--black); font-family: inherit; outline: none;
+    resize: none; min-height: 100px; transition: border-color 0.2s;
+  }
+  .tf-textarea:focus { border-color: var(--green); }
+  .tf-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 28px; }
+  .tf-progress { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; }
+  .tf-success { text-align: center; padding: 20px 0; }
+  .tf-success h3 { font-size: 22px; font-weight: 800; color: var(--black); margin-bottom: 10px; }
+  .tf-success p { font-size: 14px; color: var(--muted); line-height: 1.6; }
+  .tf-check { width: 52px; height: 52px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+
+  /* Ask modal */
+  .ask-field { margin-bottom: 18px; }
+  .ask-field label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 8px; }
+  .ask-input { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 14px; font-size: 15px; color: var(--black); font-family: inherit; outline: none; background: white; transition: border-color 0.2s; }
+  .ask-input:focus { border-color: var(--green); }
+  .ask-textarea { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 14px; font-size: 15px; color: var(--black); font-family: inherit; outline: none; background: white; resize: none; min-height: 110px; transition: border-color 0.2s; }
+  .ask-textarea:focus { border-color: var(--green); }
+
+  @media (max-width: 680px) {
+    nav, footer { padding: 14px 20px; }
+    .hero, .section, .cta-band { padding: 60px 20px; }
+    .statement { padding: 52px 20px; }
+    .cards { grid-template-columns: 1fr; }
+    .modal { padding: 28px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="/">
+    <div class="nav-mark">
+      <svg width="15" height="13" viewBox="0 0 15 13" fill="none">
+        <rect x="0" y="0"    width="15"  height="2.5" rx="1.25" fill="white"/>
+        <rect x="0" y="5.25" width="9.5" height="2.5" rx="1.25" fill="white"/>
+        <rect x="0" y="10.5" width="15"  height="2.5" rx="1.25" fill="white"/>
+      </svg>
+    </div>
+    <span class="nav-name">Eboworx</span>
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Built for you,<br/><em>not for everyone.</em></h1>
+  <p>Your business runs across too many tools that were never built for you. We build one that was.</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openBuild()">Build My Platform</button>
+    <button class="btn-ghost" onclick="openAsk()">Ask a Question</button>
+  </div>
+</div>
+
+<!-- STATEMENT -->
+<div class="statement">
+  <p>The energy going into managing your operation is energy that could be finding your next client. Most owners don't see it until they fix it.</p>
+</div>
+
+<!-- WHAT YOU GET -->
+<div class="section">
+  <div class="section-inner">
+    <div class="section-label">The Platform</div>
+    <h2>One platform. Everything connected.</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="card-num">01</div>
+        <h3>Owner Dashboard</h3>
+        <p>See your whole operation in one place — not scattered across five apps. Make better decisions faster.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <h3>Client Portal</h3>
+        <p>Give clients a professional experience that reflects the business you've built. Booking, updates, and payments — all in one place.</p>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <h3>Field Tools</h3>
+        <p>Your team stays connected, accountable, and informed — without the back-and-forth that slows everyone down.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUOTE -->
+<div style="padding: 72px 48px; text-align: center; border-top: 1px solid var(--border);">
+  <blockquote style="font-size: clamp(16px, 2.4vw, 22px); font-weight: 700; letter-spacing: -0.02em; color: var(--black); line-height: 1.55; max-width: 640px; margin: 0 auto 18px;">"Great software exists. It's just built for everyone — which means it's really built for no one in particular. Most small businesses end up with five subscriptions, using a fraction of each, and still falling through the gaps. But the real cost isn't the money. It's the energy. As a small business owner, you are the team. Every hour spent managing fragmented tools is an hour not spent scaling. We don't sell software. We build your company's platform — one place for your clients, your team, and your entire operation. Completely customizable. Always yours."</blockquote>
+  <cite style="font-size: 13px; color: var(--muted); font-style: normal; font-weight: 600;">— Eli, Founder of Eboworx</cite>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section how">
+  <div class="section-inner">
+    <div class="section-label">How It Works</div>
+    <h2>Built for you. Updated when you need it. Always yours.</h2>
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Tell us how your business works</h3>
+          <p>A short conversation or intake form. Your services, your team, your workflow. No tech knowledge needed.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>We build your platform from scratch</h3>
+          <p>Not a template. Not a subscription app with your logo slapped on it. A fully branded platform — your name, your colors, your identity — engineered around your exact operation.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>It evolves as you grow</h3>
+          <p>Need something changed? New feature? We update it fast. Your platform grows with your business — not the other way around.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>One platform, built around you.</h2>
+  <p>Tell us about your business and we'll take it from there.</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn-primary" onclick="openBuild()">Build My Platform</button>
+    <button class="btn-ghost" onclick="openAsk()">Ask a Question</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a class="footer-brand" href="/">
+    <div class="footer-mark">
+      <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+        <rect x="0" y="0" width="12"  height="2" rx="1" fill="white"/>
+        <rect x="0" y="4" width="7.5" height="2" rx="1" fill="white"/>
+        <rect x="0" y="8" width="12"  height="2" rx="1" fill="white"/>
+      </svg>
+    </div>
+    <span class="footer-name">Eboworx</span>
+  </a>
+  <p>&copy; 2026 Eboworx &nbsp;·&nbsp; Custom platforms for real businesses.</p>
+</footer>
+
+<!-- ══ BUILD MY PLATFORM MODAL ══ -->
+<div class="modal-overlay" id="buildModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBuild()">✕</button>
+
+    <!-- Step 1: Name -->
+    <div class="tf-step active" id="tf1">
+      <div class="tf-label">Step 1 of 5</div>
+      <div class="tf-question">What's your name?</div>
+      <input class="tf-input" id="tf_name" type="text" placeholder="First and last name" autocomplete="name"/>
+      <div class="tf-nav">
+        <div class="tf-progress">1 / 5</div>
+        <button class="btn-primary" onclick="tfNext(1)">Next →</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Company -->
+    <div class="tf-step" id="tf2">
+      <div class="tf-label">Step 2 of 5</div>
+      <div class="tf-question">What's your company name?</div>
+      <input class="tf-input" id="tf_company" type="text" placeholder="Company name"/>
+      <div class="tf-nav">
+        <button class="btn-ghost" onclick="tfBack(2)">← Back</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="tf-progress">2 / 5</div>
+          <button class="btn-primary" onclick="tfNext(2)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 3: What you do -->
+    <div class="tf-step" id="tf3">
+      <div class="tf-label">Step 3 of 5</div>
+      <div class="tf-question">What does your business do?</div>
+      <textarea class="tf-textarea" id="tf_what_do" placeholder="e.g. Home services, HVAC, landscaping, cleaning..."></textarea>
+      <div class="tf-nav">
+        <button class="btn-ghost" onclick="tfBack(3)">← Back</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="tf-progress">3 / 5</div>
+          <button class="btn-primary" onclick="tfNext(3)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: What you need -->
+    <div class="tf-step" id="tf4">
+      <div class="tf-label">Step 4 of 5</div>
+      <div class="tf-question">What do you need help with?</div>
+      <textarea class="tf-textarea" id="tf_what_need" placeholder="Tell us what's not working — too many tools, no client portal, no way to track your team..."></textarea>
+      <div class="tf-nav">
+        <button class="btn-ghost" onclick="tfBack(4)">← Back</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="tf-progress">4 / 5</div>
+          <button class="btn-primary" onclick="tfNext(4)">Next →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 5: Email -->
+    <div class="tf-step" id="tf5">
+      <div class="tf-label">Step 5 of 5</div>
+      <div class="tf-question">Best email to reach you?</div>
+      <input class="tf-input" id="tf_email" type="email" placeholder="you@yourcompany.com" autocomplete="email"/>
+      <div class="tf-nav">
+        <button class="btn-ghost" onclick="tfBack(5)">← Back</button>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="tf-progress">5 / 5</div>
+          <button class="btn-primary" id="tf_submit_btn" onclick="submitBuild()">Submit →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success -->
+    <div class="tf-step" id="tf_success">
+      <div class="tf-success">
+        <div class="tf-check">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M4 11l5 5 9-9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>You're in. We'll be in touch.</h3>
+        <p>Eli will reach out within one business day to talk through your platform.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ASK A QUESTION MODAL ══ -->
+<div class="modal-overlay" id="askModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeAsk()">✕</button>
+    <div class="tf-label" style="margin-bottom:6px;">Ask a Question</div>
+    <div class="tf-question" style="font-size:22px;margin-bottom:24px;">What's on your mind?</div>
+
+    <div id="ask_form">
+      <div class="ask-field">
+        <label>Your Name</label>
+        <input class="ask-input" id="ask_name" type="text" placeholder="First and last name"/>
+      </div>
+      <div class="ask-field">
+        <label>Your Email</label>
+        <input class="ask-input" id="ask_email" type="email" placeholder="you@yourcompany.com"/>
+      </div>
+      <div class="ask-field">
+        <label>Your Question</label>
+        <textarea class="ask-textarea" id="ask_question" placeholder="Ask us anything..."></textarea>
+      </div>
+      <button class="btn-primary" style="width:100%;margin-top:4px;" id="ask_submit_btn" onclick="submitAsk()">Send →</button>
+    </div>
+
+    <div id="ask_success" style="display:none;" class="tf-success">
+      <div class="tf-check">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M4 11l5 5 9-9" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>Got it — we'll get back to you soon.</h3>
+      <p>Eli typically responds within one business day.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── SUPABASE ──
+const SUPABASE_URL  = 'https://kwamuwzsglhkzzivpmyy.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3YW11d3pzZ2xoa3p6aXZwbXl5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ4MzM0NzksImV4cCI6MjEwMDQwOTQ3OX0.g-_UBKvzdn4s8BAVbKhyn-DCPBsqdpuu-h5ZnJkTwMM';
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ── BUILD MODAL ──
+function openBuild() {
+  document.getElementById('buildModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  showTfStep(1);
+}
+function closeBuild() {
+  document.getElementById('buildModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+let currentTfStep = 1;
+function showTfStep(n) {
+  document.querySelectorAll('.tf-step').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(n === 'success' ? 'tf_success' : `tf${n}`);
+  if (el) el.classList.add('active');
+  currentTfStep = n;
+}
+function tfNext(step) {
+  const fields = { 1: 'tf_name', 2: 'tf_company', 3: 'tf_what_do', 4: 'tf_what_need', 5: 'tf_email' };
+  const val = document.getElementById(fields[step])?.value.trim();
+  if (!val) { document.getElementById(fields[step]).focus(); return; }
+  showTfStep(step + 1);
+}
+function tfBack(step) { showTfStep(step - 1); }
+
+async function submitBuild() {
+  const email = document.getElementById('tf_email').value.trim();
+  if (!email) { document.getElementById('tf_email').focus(); return; }
+  const btn = document.getElementById('tf_submit_btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  await db.from('leads').insert({
+    type:         'build',
+    name:         document.getElementById('tf_name').value.trim(),
+    company_name: document.getElementById('tf_company').value.trim(),
+    what_you_do:  document.getElementById('tf_what_do').value.trim(),
+    what_you_need:document.getElementById('tf_what_need').value.trim(),
+    email,
+  });
+  showTfStep('success');
+}
+
+// ── ASK MODAL ──
+function openAsk() {
+  document.getElementById('askModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAsk() {
+  document.getElementById('askModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+async function submitAsk() {
+  const name  = document.getElementById('ask_name').value.trim();
+  const email = document.getElementById('ask_email').value.trim();
+  const q     = document.getElementById('ask_question').value.trim();
+  if (!name || !email || !q) return;
+  const btn = document.getElementById('ask_submit_btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  await db.from('leads').insert({ type: 'question', name, email, question: q });
+  document.getElementById('ask_form').style.display = 'none';
+  document.getElementById('ask_success').style.display = 'block';
+}
+
+// Close on overlay click
+document.getElementById('buildModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeBuild(); });
+document.getElementById('askModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeAsk(); });
+
+// Close on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeBuild(); closeAsk(); } });
+</script>
+</body>
 </html>
